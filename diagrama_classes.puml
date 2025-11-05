@@ -1,0 +1,194 @@
+@startuml diagrama_classes
+' --- Classe Principal (Plataforma) ---
+' NOVO: Esta classe gerencia os repositórios e
+' orquestra as ações dos casos de uso.
+class Plataforma {
+  - _listaUsuarios: List<Usuario>
+  - _listaQuestionarios: List<Questionario>
+  - _listaResultados: List<ResultadoQuestionario>
+
+  + cadastrarUsuario(usuario: Usuario)
+  + login(email: String, senha: String): Usuario
+  + criarQuestionario(builder: Builder): Questionario
+  + apagarQuestionario(questionario: Questionario, criador: Usuario)
+  + buscarQuestionarios(): List<Questionario>
+  + buscarQuestionariosPorCriador(criador: Usuario): List<Questionario>
+  + submeterRespostas(resultado: ResultadoQuestionario)
+  + buscarResultado(questionario: Questionario, respondente: Usuario): ResultadoQuestionario
+  + removerResultado(resultado: ResultadoQuestionario)
+}
+
+' --- Classe de Resultado (Respostas) ---
+' NOVO: Esta classe representa a submissão de um
+' questionário por um respondente.
+class ResultadoQuestionario {
+  - _questionario: Questionario {readonly}
+  - _respondente: Usuario {readonly}
+  - _listaRespostas: List<Resposta>
+  - _dataSubmissao: LocalDate
+
+  + ResultadoQuestionario(questionario: Questionario, respondente: Usuario)
+  + adicionarResposta(resposta: Resposta)
+  + editarResposta(item: Item, novaResposta: Resposta)
+  + removerResposta(resposta: Resposta)
+  + obterRespostas(): List<Resposta> {readonly}
+  + obterRespondente(): Usuario
+  + obterQuestionario(): Questionario
+}
+
+
+' --- Classe Questionario (com Edição) ---
+class Questionario {
+  - _titulo: String
+  - _descricao: String
+  - _listaItens: List<Item>
+  - _criador: Usuario
+  - _idBanner: int
+  - _dataCriacao: LocalDate
+  - _categorias: List<Categoria>
+
+  ~ Questionario(builder: Builder)
+  + obterTitulo(): String
+  + obterDescricao(): String
+  + obterListaItens(): List<Item> {readonly}
+  + obterCriador(): Usuario
+  + obterIdBanner(): int
+  + obterDataCriacao(): LocalDate
+  + obterCategorias(): List<Categoria> {readonly}
+  + adicionarItem(item: Item)
+  + removerItem(item: Item)
+  + alterarTitulo(titulo: String)
+  + alterarDescricao(descricao: String)
+  + adicionarCategoria(categoria: Categoria)
+  + removerCategoria(categoria: Categoria)
+}
+
+' --- Classe Builder (Inalterada) ---
+class Builder {
+  - _titulo: String {readonly}
+  - _criador: Usuario {readonly}
+  - _descricao: String
+  - _idBanner: int
+  
+  + Builder(titulo: String, criador: Usuario)
+  + comDescricao(descricao: String): Builder
+  + comIdBanner(idBanner: int): Builder
+  + build(): Questionario
+}
+
+' --- Classes de Domínio Externas (Apoio) ---
+class Usuario {
+  - _nome: String
+  - _email: String
+  - _senha: String
+  - _idFoto: int
+
+  + Usuario(nome: String, email: String, senha: String)
+  + Usuario(nome: String, email: String, senha: String, idFoto: int)
+  + obterNome(): String
+  + obterEmail(): String
+  + obterIdFoto(): int
+  + alterarNome(nome: String)
+  + alterarSenha(senhaAntiga: String, senhaNova: String)
+  + definirFoto(idFoto: int)
+}
+
+enum Categoria {
+  QUIZ,
+  PERSONALIDADE
+}
+
+' --- Hierarquia de Itens (com Edição) ---
+abstract class Item<T extends Resposta> {
+  # _enunciado: String
+
+  + Item(enunciado: String)
+  + obterEnunciado(): String
+  + {abstract} repostaEstaCorreta(resposta: T): bool
+  + alterarEnunciado(enunciado: String)
+}
+
+class QuestaoDissertativa extends Item<RespostaDissertativa> {
+  - _gabarito: String
+
+  + QuestaoDissertativa(enunciado: String, gabarito: String)
+  + obterGabarito(): String
+  + repostaEstaCorreta(resposta: RespostaDissertativa): bool
+  + alterarGabarito(gabarito: String)
+}
+
+class QuestaoAlternativa extends Item<RespostaAlternativa> {
+  - _listaAlternativas: List<Alternativa>
+
+  + QuestaoAlternativa(enunciado: String)
+  + obterListaAlternativas(): List<Alternativa> {readonly}
+  + adicionarAlternativa(alternativa: Alternativa)
+  + adicionarAlternativa(descricao: String, estaCorreta: bool)
+  + repostaEstaCorreta(resposta: RespostaAlternativa): bool
+  + removerAlternativa(alternativa: Alternativa)
+  + editarAlternativa(antiga: Alternativa, nova: Alternativa)
+}
+
+class Alternativa {
+  - _descricao: String
+  - _estaCorreta: bool
+
+  + Alternativa(descricao: String, estaCorreta: bool)
+  + obterDescricao(): String
+  + obterEstaCorreta(): bool
+  + alterarDescricao(descricao: String)
+  + definirComoCorreta(estaCorreta: bool)
+}
+
+
+' --- Hierarquia de Respostas (com Edição) ---
+abstract class Resposta {
+  # _respondente: Usuario {readonly}
+  # _dataResposta: LocalDate {readonly}
+
+  + Resposta(respondente: Usuario)
+  + obterRespondente(): Usuario
+}
+
+class RespostaDissertativa extends Resposta {
+  - _texto: String
+
+  + RespostaDissertativa(respondente: Usuario, texto: String)
+  + obterTexto(): String
+  + alterarTexto(texto: String)
+}
+
+class RespostaAlternativa extends Resposta {
+  - _alternativaSelecionada: Alternativa
+
+  + RespostaAlternativa(respondente: Usuario, alternativa: Alternativa)
+  + obterAlternativaSelecionada(): Alternativa
+  + alterarAlternativaSelecionada(alternativa: Alternativa)
+}
+
+
+' --- Relacionamentos ---
+' Composição (HAS-MANY, dono controla ciclo de vida)
+Usuario "*" --* Plataforma : "gerencia"
+Questionario "*" --* Plataforma : "gerencia"
+Plataforma *-- "*" ResultadoQuestionario : "gerencia"
+
+Questionario *-- "1..*" Item : "contém"
+QuestaoAlternativa *-- "2..*" Alternativa : "contém"
+ResultadoQuestionario *-- "1..*" Resposta : "contém"
+
+' Agregação (HAS-A, usa objeto externo)
+Questionario o- "1" Usuario : "criado por"
+Categoria "*" -o Questionario : "classificado em"
+Questionario "1" --o ResultadoQuestionario : "refere-se a"
+Usuario "1" --o ResultadoQuestionario : "submetido por"
+Usuario "1" --o Resposta : "dada por"
+RespostaAlternativa o-- "1" Alternativa : "seleciona"
+
+' Dependência (Usa)
+Item .> Resposta
+Builder <.. Plataforma : "usa para criar"
+
+' Relacionamento: Builder "cria" o Questionario
+Questionario +-> Builder : "cria"
+@enduml
