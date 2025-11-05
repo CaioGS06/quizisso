@@ -219,15 +219,10 @@ window.onclick = function (evento) {
 - ✅ Estrutura MVC (Model-View-Controller)
 - ✅ Roteamento com `@GetMapping`
 - ✅ Utilização do Thymeleaf para templates
-- ✅ Fragmentos reutilizáveis com `th:fragment` e `th:replace`
 - ✅ Passagem de dados do Controller para a View com `Model`
 - ✅ Servir arquivos estáticos (CSS, JS, imagens)
 - ✅ Organização de recursos em `static/` e `templates/`
 - ✅ Navegação entre páginas
-- ✅ Layout responsivo e moderno
-- ✅ Sistema de modais com controle de eventos JavaScript
-- ✅ Flexbox para layouts adaptativos
-- ✅ Media queries para responsividade mobile-first
 
 ## 🎯 Páginas Implementadas
 
@@ -243,31 +238,16 @@ window.onclick = function (evento) {
 ## 🔧 Melhorias Futuras
 
 - [ ] Implementar autenticação de usuários
-- [ ] Criar sistema de banco de dados (JPA/Hibernate)
+- [ ] Criar sistema de banco de dados
 - [ ] Desenvolver funcionalidade de criação de questionários
 - [ ] Adicionar sistema de respostas e correção automática
 - [ ] Implementar upload de imagens para questionários
-- [ ] Adicionar sistema de pontuação e ranking
-- [ ] Otimizar performance com lazy loading
-- [ ] Adicionar testes unitários e de integração
-
-## 🐛 Correções Implementadas
-
-### Problema: Modais não abrindo quando clicados
-**Causa**: Os modais estavam definidos no arquivo `cabecalho.html` mas fora do escopo do fragmento Thymeleaf. Quando as páginas usavam `th:replace` para incluir o fragmento, apenas o conteúdo dentro de `th:fragment="cabecalho"` era incluído, deixando os modais de fora do DOM.
-
-**Solução**: Reestruturação do fragmento para envolver tanto o `<header>` quanto os modais dentro de uma `<div>` com o atributo `th:fragment="cabecalho"`. Isso garante que todos os elementos sejam incluídos quando o fragmento é substituído nas páginas.
-
-### Problema: Menu de navegação não quebrando corretamente em mobile
-**Causa**: O flexbox estava dependendo do conteúdo para quebrar linha, funcionando apenas em telas muito pequenas (<428px).
-
-**Solução**: Uso de `flex-basis: 100%` no `.menu-navegacao` para forçar a quebra de linha em qualquer tela menor que 768px, independentemente do tamanho do conteúdo.
 
 ## 👨‍💻 Autor
 
-**Caio Gonçalves dos Santos**
+**Caio Greiffo Sampaio**
 - Curso: Programação Orientada a Objetos
-- Instituição: [Nome da Instituição]
+- Instituição: Faculdade de Tecnologia da Baixada Santista “Rubens Lara”
 - GitHub: [@caiogs06](https://github.com/caiogs06)
 
 ## 📄 Licença
