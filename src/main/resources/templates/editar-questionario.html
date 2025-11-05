@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <title>Quizisso - Editar Questionário</title>
+  <th:block th:replace="~{fragments/cabecalho :: head}"></th:block>
+</head>
+
+<body>
+  <th:block th:replace="~{fragments/cabecalho :: cabecalho}"></th:block>
+
+  <main class="conteudo-principal">
+    <div class="container-questionario">
+      <div class="header-questionario">
+        <button class="botao-voltar" onclick="window.location.href='/meus-questionarios'">
+          <i class="ti ti-arrow-left"></i>
+          Voltar
+        </button>
+        <div class="info-questionario">
+          <input type="text" class="campo-titulo-edicao" value="Meu Quiz de JavaScript">
+          <button class="botao-excluir-questionario" onclick="abrirModalExcluirQuestionario()">
+            <i class="ti ti-trash"></i>
+            Excluir Questionário
+          </button>
+        </div>
+      </div>
+
+      <form class="formulario-questionario">
+        <!-- Questão 1 em Edição -->
+        <div class="questao-card edicao">
+          <div class="questao-header">
+            <span class="questao-numero">Questão 1</span>
+            <select class="select-tipo-questao">
+              <option value="alternativa" selected>Alternativa</option>
+              <option value="dissertativa">Dissertativa</option>
+            </select>
+            <button type="button" class="botao-remover-questao" onclick="removerQuestao(this)">
+              <i class="ti ti-x"></i>
+            </button>
+          </div>
+          <input type="text" class="campo-enunciado" value="O que é JavaScript?" placeholder="Digite o enunciado...">
+          <div class="alternativas-edicao">
+            <div class="alternativa-edicao">
+              <input type="radio" name="correta1" checked>
+              <input type="text" class="campo-alternativa" value="Uma linguagem de programação">
+              <button type="button" class="botao-remover-alternativa" onclick="removerAlternativa(this)">
+                <i class="ti ti-x"></i>
+              </button>
+            </div>
+            <div class="alternativa-edicao">
+              <input type="radio" name="correta1">
+              <input type="text" class="campo-alternativa" value="Um framework CSS">
+              <button type="button" class="botao-remover-alternativa" onclick="removerAlternativa(this)">
+                <i class="ti ti-x"></i>
+              </button>
+            </div>
+            <div class="alternativa-edicao">
+              <input type="radio" name="correta1">
+              <input type="text" class="campo-alternativa" value="Um banco de dados">
+              <button type="button" class="botao-remover-alternativa" onclick="removerAlternativa(this)">
+                <i class="ti ti-x"></i>
+              </button>
+            </div>
+            <button type="button" class="botao-adicionar-alternativa">
+              <i class="ti ti-plus"></i>
+              Adicionar Alternativa
+            </button>
+          </div>
+        </div>
+
+        <!-- Questão 2 em Edição -->
+        <div class="questao-card edicao">
+          <div class="questao-header">
+            <span class="questao-numero">Questão 2</span>
+            <select class="select-tipo-questao">
+              <option value="alternativa">Alternativa</option>
+              <option value="dissertativa" selected>Dissertativa</option>
+            </select>
+            <button type="button" class="botao-remover-questao" onclick="removerQuestao(this)">
+              <i class="ti ti-x"></i>
+            </button>
+          </div>
+          <input type="text" class="campo-enunciado" value="Explique a diferença entre var, let e const."
+            placeholder="Digite o enunciado...">
+          <textarea class="campo-gabarito" placeholder="Digite o gabarito/resposta esperada..."
+            rows="4">var tem escopo de função, let e const têm escopo de bloco. const não pode ser reatribuído.</textarea>
+        </div>
+
+        <div class="acoes-formulario">
+          <button type="button" class="botao-adicionar-questao" onclick="adicionarQuestao()">
+            <i class="ti ti-plus"></i>
+            Adicionar Questão
+          </button>
+          <button type="submit" class="botao-salvar">
+            <i class="ti ti-device-floppy"></i>
+            Salvar Alterações
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <!-- Modal de Confirmação de Exclusão -->
+  <div id="modalExcluirQuestionario" class="modal">
+    <div class="modal-conteudo">
+      <div class="modal-header">
+        <h3>Confirmar Exclusão</h3>
+        <button class="botao-fechar-modal" onclick="fecharModalExcluirQuestionario()">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+      <div class="modal-corpo">
+        <p>Tem certeza que deseja excluir este questionário?</p>
+        <p class="modal-aviso">Esta ação não pode ser desfeita.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="botao-cancelar" onclick="fecharModalExcluirQuestionario()">Cancelar</button>
+        <button class="botao-confirmar-excluir" onclick="confirmarExclusaoQuestionario()">
+          <i class="ti ti-trash"></i>
+          Excluir
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <th:block th:replace="~{fragments/cabecalho :: scripts}"></th:block>
+</body>
+
+</html>

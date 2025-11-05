@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <title>Quizisso - Responder Questionário</title>
+  <th:block th:replace="~{fragments/cabecalho :: head}"></th:block>
+</head>
+
+<body>
+  <th:block th:replace="~{fragments/cabecalho :: cabecalho}"></th:block>
+
+  <main class="conteudo-principal">
+    <div class="container-questionario">
+      <div class="header-questionario">
+        <button class="botao-voltar" onclick="window.location.href='/'">
+          <i class="ti ti-arrow-left"></i>
+          Voltar
+        </button>
+        <div class="info-questionario">
+          <h1>Quiz de Programação Java</h1>
+          <div class="info-criador-header">
+            <img src="/img/usuario-peixe.jpg" alt="Foto do criador" class="foto-criador">
+            <span>Criado por <strong>João Silva</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <form class="formulario-questionario">
+        <!-- Questão Alternativa 1 -->
+        <div class="questao-card">
+          <div class="questao-header">
+            <span class="questao-numero">Questão 1</span>
+            <span class="questao-tipo">Alternativa</span>
+          </div>
+          <h3 class="questao-enunciado">Qual é a diferença entre JDK e JRE?</h3>
+          <div class="alternativas">
+            <label class="alternativa">
+              <input type="radio" name="questao1" value="a">
+              <span>JDK é usado para executar aplicações, JRE para desenvolver</span>
+            </label>
+            <label class="alternativa">
+              <input type="radio" name="questao1" value="b">
+              <span>JDK contém ferramentas de desenvolvimento e JRE, JRE apenas executa aplicações</span>
+            </label>
+            <label class="alternativa">
+              <input type="radio" name="questao1" value="c">
+              <span>Não há diferença entre JDK e JRE</span>
+            </label>
+            <label class="alternativa">
+              <input type="radio" name="questao1" value="d">
+              <span>JRE é mais moderno que JDK</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Questão Dissertativa -->
+        <div class="questao-card">
+          <div class="questao-header">
+            <span class="questao-numero">Questão 2</span>
+            <span class="questao-tipo">Dissertativa</span>
+          </div>
+          <h3 class="questao-enunciado">Explique o conceito de Polimorfismo em POO com um exemplo.</h3>
+          <textarea class="campo-dissertativa" placeholder="Digite sua resposta aqui..." rows="6"></textarea>
+        </div>
+
+        <!-- Questão Alternativa 2 -->
+        <div class="questao-card">
+          <div class="questao-header">
+            <span class="questao-numero">Questão 3</span>
+            <span class="questao-tipo">Alternativa</span>
+          </div>
+          <h3 class="questao-enunciado">O que significa o princípio SOLID?</h3>
+          <div class="alternativas">
+            <label class="alternativa">
+              <input type="radio" name="questao3" value="a">
+              <span>Um conjunto de boas práticas de programação orientada a objetos</span>
+            </label>
+            <label class="alternativa">
+              <input type="radio" name="questao3" value="b">
+              <span>Um framework para desenvolvimento Java</span>
+            </label>
+            <label class="alternativa">
+              <input type="radio" name="questao3" value="c">
+              <span>Uma linguagem de programação</span>
+            </label>
+            <label class="alternativa">
+              <input type="radio" name="questao3" value="d">
+              <span>Um padrão de design de banco de dados</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="acoes-formulario">
+          <button type="submit" class="botao-enviar">
+            <i class="ti ti-send"></i>
+            Enviar Respostas
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <th:block th:replace="~{fragments/cabecalho :: scripts}"></th:block>
+</body>
+
+</html>

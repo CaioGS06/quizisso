@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <title>Quizisso - Criar Questionário</title>
+  <th:block th:replace="~{fragments/cabecalho :: head}"></th:block>
+</head>
+
+<body>
+  <th:block th:replace="~{fragments/cabecalho :: cabecalho}"></th:block>
+
+  <main class="conteudo-principal">
+    <div class="container-questionario">
+      <div class="header-questionario">
+        <button class="botao-voltar" onclick="window.location.href='/meus-questionarios'">
+          <i class="ti ti-arrow-left"></i>
+          Voltar
+        </button>
+        <div class="info-questionario">
+          <input type="text" class="campo-titulo-edicao" placeholder="Título do Questionário">
+        </div>
+      </div>
+
+      <form class="formulario-questionario">
+        <div class="info-criacao">
+          <p>Adicione questões ao seu questionário clicando no botão abaixo.</p>
+        </div>
+
+        <div class="acoes-formulario">
+          <button type="button" class="botao-adicionar-questao" onclick="adicionarQuestao()">
+            <i class="ti ti-plus"></i>
+            Adicionar Questão
+          </button>
+          <button type="submit" class="botao-salvar">
+            <i class="ti ti-device-floppy"></i>
+            Criar Questionário
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <th:block th:replace="~{fragments/cabecalho :: scripts}"></th:block>
+</body>
+
+</html>

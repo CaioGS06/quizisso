@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <title>Quizisso - Questionários Respondidos</title>
+  <th:block th:replace="~{fragments/cabecalho :: head}"></th:block>
+</head>
+
+<body>
+  <th:block th:replace="~{fragments/cabecalho :: cabecalho}"></th:block>
+
+  <main class="conteudo-principal">
+    <div class="cabecalho-secao">
+      <h2>Questionários Respondidos</h2>
+    </div>
+
+    <div class="grade-questionarios">
+      <!-- Questionário respondido 1 -->
+      <div class="card-questionario" onclick="window.location.href='/visualizar-resultado'">
+        <div class="imagem-questionario">
+          <img src="/img/questionario-padrao.jpg" alt="Quiz de Programação Java">
+        </div>
+        <h3 class="titulo-questionario">Quiz de Programação Java</h3>
+        <div class="info-criador">
+          <img src="/img/usuario-peixe.jpg" alt="Foto do criador" class="foto-criador">
+          <span class="nome-criador">João Silva</span>
+        </div>
+        <div class="nota-badge">
+          <i class="ti ti-circle-check"></i>
+          <span>Nota: 8.5/10</span>
+        </div>
+      </div>
+
+      <!-- Questionário respondido 2 -->
+      <div class="card-questionario" onclick="window.location.href='/visualizar-resultado'">
+        <div class="imagem-questionario">
+          <img src="/img/questionario-padrao.jpg" alt="História do Brasil">
+        </div>
+        <h3 class="titulo-questionario">História do Brasil</h3>
+        <div class="info-criador">
+          <img src="/img/usuario-sapo.jpg" alt="Foto do criador" class="foto-criador">
+          <span class="nome-criador">Maria Santos</span>
+        </div>
+        <div class="nota-badge">
+          <i class="ti ti-circle-check"></i>
+          <span>Nota: 9.0/10</span>
+        </div>
+      </div>
+
+      <!-- Questionário respondido 3 -->
+      <div class="card-questionario" onclick="window.location.href='/visualizar-resultado'">
+        <div class="imagem-questionario">
+          <img src="/img/questionario-padrao.jpg" alt="Matemática Básica">
+        </div>
+        <h3 class="titulo-questionario">Matemática Básica</h3>
+        <div class="info-criador">
+          <img src="/img/usuario-corvo.jpg" alt="Foto do criador" class="foto-criador">
+          <span class="nome-criador">Pedro Costa</span>
+        </div>
+        <div class="nota-badge">
+          <i class="ti ti-circle-check"></i>
+          <span>Nota: 7.5/10</span>
+        </div>
+      </div>
+
+      <!-- Questionário respondido 4 -->
+      <div class="card-questionario" onclick="window.location.href='/visualizar-resultado'">
+        <div class="imagem-questionario">
+          <img src="/img/questionario-padrao.jpg" alt="Ciências Naturais">
+        </div>
+        <h3 class="titulo-questionario">Ciências Naturais</h3>
+        <div class="info-criador">
+          <img src="/img/usuario-peixe.jpg" alt="Foto do criador" class="foto-criador">
+          <span class="nome-criador">Carlos Souza</span>
+        </div>
+        <div class="nota-badge">
+          <i class="ti ti-circle-check"></i>
+          <span>Nota: 10.0/10</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <th:block th:replace="~{fragments/cabecalho :: scripts}"></th:block>
+</body>
+
+</html>

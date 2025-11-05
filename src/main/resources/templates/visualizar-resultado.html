@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <title>Quizisso - Visualizar Resultado</title>
+  <th:block th:replace="~{fragments/cabecalho :: head}"></th:block>
+</head>
+
+<body>
+  <th:block th:replace="~{fragments/cabecalho :: cabecalho}"></th:block>
+
+  <main class="conteudo-principal">
+    <div class="container-questionario">
+      <div class="header-questionario">
+        <button class="botao-voltar" onclick="window.location.href='/questionarios-respondidos'">
+          <i class="ti ti-arrow-left"></i>
+          Voltar
+        </button>
+        <div class="info-questionario">
+          <h1>Quiz de Programação Java</h1>
+          <div class="info-resultado-header">
+            <div class="info-criador-header">
+              <img src="/img/usuario-peixe.jpg" alt="Foto do criador" class="foto-criador">
+              <span>Criado por <strong>João Silva</strong></span>
+            </div>
+            <div class="nota-resultado">
+              <i class="ti ti-circle-check"></i>
+              <span>Nota Final: <strong>8.5/10</strong></span>
+            </div>
+          </div>
+          <button class="botao-excluir-resultado" onclick="abrirModalExcluirResultado()">
+            <i class="ti ti-trash"></i>
+            Excluir Resultado
+          </button>
+        </div>
+      </div>
+
+      <div class="formulario-questionario">
+        <!-- Questão 1 - Correta -->
+        <div class="questao-card resultado correta">
+          <div class="questao-header">
+            <span class="questao-numero">Questão 1</span>
+            <span class="questao-tipo">Alternativa</span>
+            <span class="badge-status correto">
+              <i class="ti ti-check"></i>
+              Correta
+            </span>
+          </div>
+          <h3 class="questao-enunciado">Qual é a diferença entre JDK e JRE?</h3>
+          <div class="alternativas">
+            <div class="alternativa selecionada correta">
+              <i class="ti ti-circle-check"></i>
+              <span>JDK contém ferramentas de desenvolvimento e JRE, JRE apenas executa aplicações</span>
+            </div>
+            <div class="alternativa">
+              <span>JDK é usado para executar aplicações, JRE para desenvolver</span>
+            </div>
+            <div class="alternativa">
+              <span>Não há diferença entre JDK e JRE</span>
+            </div>
+            <div class="alternativa">
+              <span>JRE é mais moderno que JDK</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Questão 2 - Dissertativa -->
+        <div class="questao-card resultado">
+          <div class="questao-header">
+            <span class="questao-numero">Questão 2</span>
+            <span class="questao-tipo">Dissertativa</span>
+          </div>
+          <h3 class="questao-enunciado">Explique o conceito de Polimorfismo em POO com um exemplo.</h3>
+          <div class="resposta-dissertativa">
+            <h4>Sua resposta:</h4>
+            <p>Polimorfismo é a capacidade de um objeto assumir várias formas. Por exemplo, uma classe Animal pode ter
+              um método fazerSom(), e as classes Cachorro e Gato que herdam de Animal podem implementar esse método de
+              formas diferentes.</p>
+          </div>
+          <div class="gabarito-dissertativa">
+            <h4>Gabarito:</h4>
+            <p>Polimorfismo permite que objetos de diferentes classes sejam tratados através de uma interface comum,
+              respondendo de forma específica a cada classe.</p>
+          </div>
+        </div>
+
+        <!-- Questão 3 - Incorreta -->
+        <div class="questao-card resultado incorreta">
+          <div class="questao-header">
+            <span class="questao-numero">Questão 3</span>
+            <span class="questao-tipo">Alternativa</span>
+            <span class="badge-status incorreto">
+              <i class="ti ti-x"></i>
+              Incorreta
+            </span>
+          </div>
+          <h3 class="questao-enunciado">O que significa o princípio SOLID?</h3>
+          <div class="alternativas">
+            <div class="alternativa selecionada incorreta">
+              <i class="ti ti-circle-x"></i>
+              <span>Um framework para desenvolvimento Java</span>
+            </div>
+            <div class="alternativa correta-gabarito">
+              <i class="ti ti-check"></i>
+              <span>Um conjunto de boas práticas de programação orientada a objetos</span>
+            </div>
+            <div class="alternativa">
+              <span>Uma linguagem de programação</span>
+            </div>
+            <div class="alternativa">
+              <span>Um padrão de design de banco de dados</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="resumo-resultado">
+          <div class="estatistica">
+            <i class="ti ti-circle-check"></i>
+            <span><strong>2</strong> corretas</span>
+          </div>
+          <div class="estatistica">
+            <i class="ti ti-circle-x"></i>
+            <span><strong>1</strong> incorreta</span>
+          </div>
+          <div class="estatistica">
+            <i class="ti ti-calculator"></i>
+            <span>Total: <strong>3</strong> questões</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal de Confirmação de Exclusão de Resultado -->
+  <div id="modalExcluirResultado" class="modal">
+    <div class="modal-conteudo">
+      <div class="modal-header">
+        <h3>Confirmar Exclusão</h3>
+        <button class="botao-fechar-modal" onclick="fecharModalExcluirResultado()">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+      <div class="modal-corpo">
+        <p>Tem certeza que deseja excluir este resultado?</p>
+        <p class="modal-aviso">Esta ação não pode ser desfeita.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="botao-cancelar" onclick="fecharModalExcluirResultado()">Cancelar</button>
+        <button class="botao-confirmar-excluir" onclick="confirmarExclusaoResultado()">
+          <i class="ti ti-trash"></i>
+          Excluir
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <th:block th:replace="~{fragments/cabecalho :: scripts}"></th:block>
+</body>
+
+</html>

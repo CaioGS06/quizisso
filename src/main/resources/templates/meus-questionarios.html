@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <title>Quizisso - Meus Questionários</title>
+  <th:block th:replace="~{fragments/cabecalho :: head}"></th:block>
+</head>
+
+<body>
+  <th:block th:replace="~{fragments/cabecalho :: cabecalho}"></th:block>
+
+  <main class="conteudo-principal">
+    <div class="cabecalho-secao">
+      <h2>Meus Questionários</h2>
+      <button class="botao-criar" onclick="window.location.href='/criar-questionario'">
+        <i class="ti ti-plus"></i>
+        <span>Criar Questionário</span>
+      </button>
+    </div>
+
+    <div class="grade-questionarios">
+      <!-- Questionário do usuário 1 -->
+      <div class="card-questionario" onclick="window.location.href='/editar-questionario'">
+        <div class="imagem-questionario">
+          <img src="/img/questionario-padrao.jpg" alt="Meu Quiz de JavaScript">
+        </div>
+        <h3 class="titulo-questionario">Meu Quiz de JavaScript</h3>
+      </div>
+
+      <!-- Questionário do usuário 2 -->
+      <div class="card-questionario" onclick="window.location.href='/editar-questionario'">
+        <div class="imagem-questionario">
+          <img src="/img/questionario-padrao.jpg" alt="Quiz de Spring Boot">
+        </div>
+        <h3 class="titulo-questionario">Quiz de Spring Boot</h3>
+      </div>
+
+      <!-- Questionário do usuário 3 -->
+      <div class="card-questionario" onclick="window.location.href='/editar-questionario'">
+        <div class="imagem-questionario">
+          <img src="/img/questionario-padrao.jpg" alt="Teste de SQL">
+        </div>
+        <h3 class="titulo-questionario">Teste de SQL</h3>
+      </div>
+    </div>
+  </main>
+
+  <th:block th:replace="~{fragments/cabecalho :: scripts}"></th:block>
+</body>
+
+</html>
