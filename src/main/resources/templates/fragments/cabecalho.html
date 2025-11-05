@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="head">
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="/css/home.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400..700;1,400..700&family=Monofett&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+</head>
+
+<body>
+  <div th:fragment="cabecalho">
+    <header class="cabecalho">
+      <div class="logo">
+        <img src="/img/logo.jpg" alt="Quizisso" class="logo-image">
+      </div>
+
+      <nav class="menu-navegacao">
+        <a href="/" class="link-navegacao" th:classappend="${paginaAtual == 'home'} ? 'active' : ''">
+          <i class="ti ti-apps"></i>
+          <span>Todos os Questionários</span>
+        </a>
+        <a href="/meus-questionarios" class="link-navegacao"
+          th:classappend="${paginaAtual == 'meus-questionarios'} ? 'active' : ''">
+          <i class="ti ti-notebook"></i>
+          <span>Meus Questionários</span>
+        </a>
+        <a href="/questionarios-respondidos" class="link-navegacao"
+          th:classappend="${paginaAtual == 'questionarios-respondidos'} ? 'active' : ''">
+          <i class="ti ti-circle-check"></i>
+          <span>Questionários Respondidos</span>
+        </a>
+      </nav>
+
+      <div class="secao-usuario">
+        <div class="perfil-usuario-container" onclick="alternarMenuUsuario()">
+          <div class="perfil-usuario">
+            <img src="/img/usuario-camarao.jpg" alt="Foto do usuário" class="foto-usuario">
+          </div>
+          <span class="nome-usuario-mobile">Caio GS</span>
+        </div>
+        <div class="menu-usuario" id="menuUsuario">
+          <div class="info-usuario-menu">
+            <img src="/img/usuario-camarao.jpg" alt="Foto do usuário" class="foto-usuario-menu">
+            <span class="nome-usuario-menu">Caio GS</span>
+          </div>
+          <a href="#" class="item-menu-usuario" onclick="abrirModalAlterarFoto(event); return false;">
+            <i class="ti ti-photo"></i>
+            <span>Alterar foto</span>
+          </a>
+          <a href="#" class="item-menu-usuario" onclick="abrirModalAlterarNome(event); return false;">
+            <i class="ti ti-edit"></i>
+            <span>Alterar nome</span>
+          </a>
+          <a href="#" class="item-menu-usuario" onclick="abrirModalLogout(event); return false;">
+            <i class="ti ti-logout"></i>
+            <span>Deslogar</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Modais de Usuário -->
+    <div id="modalAlterarFoto" class="modal">
+      <div class="modal-conteudo">
+        <div class="modal-header">
+          <h3>Alterar Foto de Perfil</h3>
+          <button class="botao-fechar-modal" onclick="fecharModalAlterarFoto()">
+            <i class="ti ti-x"></i>
+          </button>
+        </div>
+        <div class="modal-corpo">
+          <p>Selecione uma nova foto para seu perfil:</p>
+          <input type="file" accept="image/*" class="campo-formulario">
+        </div>
+        <div class="modal-footer">
+          <button class="botao-cancelar" onclick="fecharModalAlterarFoto()">Cancelar</button>
+          <button class="botao-confirmar" onclick="confirmarAlterarFoto()">
+            <i class="ti ti-check"></i>
+            Confirmar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="modalAlterarNome" class="modal">
+      <div class="modal-conteudo">
+        <div class="modal-header">
+          <h3>Alterar Nome</h3>
+          <button class="botao-fechar-modal" onclick="fecharModalAlterarNome()">
+            <i class="ti ti-x"></i>
+          </button>
+        </div>
+        <div class="modal-corpo">
+          <p>Digite seu novo nome:</p>
+          <input type="text" id="campoNovoNome" class="campo-formulario" placeholder="Novo nome">
+        </div>
+        <div class="modal-footer">
+          <button class="botao-cancelar" onclick="fecharModalAlterarNome()">Cancelar</button>
+          <button class="botao-confirmar" onclick="confirmarAlterarNome()">
+            <i class="ti ti-check"></i>
+            Confirmar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="modalLogout" class="modal">
+      <div class="modal-conteudo">
+        <div class="modal-header">
+          <h3>Confirmar Logout</h3>
+          <button class="botao-fechar-modal" onclick="fecharModalLogout()">
+            <i class="ti ti-x"></i>
+          </button>
+        </div>
+        <div class="modal-corpo">
+          <p>Tem certeza que deseja sair?</p>
+        </div>
+        <div class="modal-footer">
+          <button class="botao-cancelar" onclick="fecharModalLogout()">Cancelar</button>
+          <button class="botao-confirmar-excluir" onclick="confirmarLogout()">
+            <i class="ti ti-logout"></i>
+            Sair
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div th:fragment="scripts">
+    <script src="/js/home.js"></script>
+  </div>
+</body>
+
+</html>
