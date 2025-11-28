@@ -49,15 +49,15 @@ quiz/
 │   │   └── resources/
 │   │       ├── static/
 │   │       │   ├── css/
-│   │       │   │   └── home.css             # Estilos globais
-│   │       │   ├── img/                     # Imagens do projeto
+│   │       │   │   └── style.css             # Estilos globais
+│   │       │   ├── img/                      # Imagens do projeto
 │   │       │   └── js/
-│   │       │       └── home.js              # Scripts JavaScript
+│   │       │       └── script.js             # Scripts JavaScript
 │   │       └── templates/
 │   │           ├── fragments/
-│   │           │   └── cabecalho.html       # Fragmento reutilizável do header
-│   │           ├── home.html                # Página inicial
-│   │           ├── meus-questionarios.html  # Página de questionários do usuário
+│   │           │   └── cabecalho.html        # Fragmento reutilizável do header
+│   │           ├── home.html                 # Página inicial
+│   │           ├── meus-questionarios.html   # Página de questionários do usuário
 │   │           └── questionarios-respondidos.html
 │   └── test/
 └── pom.xml

@@ -17,15 +17,17 @@
           Voltar
         </button>
         <div class="info-questionario">
-          <h1>Quiz de Programação Java</h1>
+          <h1 th:text="${resultado.questionario.titulo}">Quiz de Programação</h1>
           <div class="info-resultado-header">
             <div class="info-criador-header">
-              <img src="/img/usuario-peixe.jpg" alt="Foto do criador" class="foto-criador">
-              <span>Criado por <strong>João Silva</strong></span>
+              <img th:src="@{'/img/' + ${resultado.questionario.criador.nomeFoto}}"
+                th:alt="${resultado.questionario.criador.nome}" class="foto-criador" alt="Foto do criador">
+              <span>Criado por <strong th:text="${resultado.questionario.criador.nome}">Criador</strong></span>
             </div>
             <div class="nota-resultado">
               <i class="ti ti-circle-check"></i>
-              <span>Nota Final: <strong>8.5/10</strong></span>
+              <span>Nota Final: <strong
+                  th:text="${#numbers.formatDecimal(resultado.notaFinal, 1, 1)} + '/10'">0.0/10</strong></span>
             </div>
           </div>
           <button class="botao-excluir-resultado" onclick="abrirModalExcluirResultado()">
@@ -36,79 +38,49 @@
       </div>
 
       <div class="formulario-questionario">
-        <!-- Questão 1 - Correta -->
-        <div class="questao-card resultado correta">
+        <!-- Loop através dos itens do questionário -->
+        <div class="questao-card resultado" th:each="item, iterStat : ${resultado.questionario.itens}"
+          th:with="resposta=${resultado.obterRespostas().stream().filter(r -> r.itemId == item.id).findFirst().orElse(null)},
+                   estaCorreta=${item.class.simpleName == 'ItemAlternativa' ? (resposta != null && item.verificarResposta(resposta)) : null}"
+          th:classappend="${estaCorreta != null ? (estaCorreta ? 'correta' : 'incorreta') : ''}">
           <div class="questao-header">
-            <span class="questao-numero">Questão 1</span>
-            <span class="questao-tipo">Alternativa</span>
-            <span class="badge-status correto">
+            <span class="questao-numero" th:text="'Questão ' + ${iterStat.count}">Questão 1</span>
+            <span class="questao-tipo"
+              th:text="${item.class.simpleName == 'ItemAlternativa' ? 'Alternativa' : 'Dissertativa'}">Alternativa</span>
+            <span class="badge-status correto" th:if="${estaCorreta != null && estaCorreta}">
               <i class="ti ti-check"></i>
               Correta
             </span>
-          </div>
-          <h3 class="questao-enunciado">Qual é a diferença entre JDK e JRE?</h3>
-          <div class="alternativas">
-            <div class="alternativa selecionada correta">
-              <i class="ti ti-circle-check"></i>
-              <span>JDK contém ferramentas de desenvolvimento e JRE, JRE apenas executa aplicações</span>
-            </div>
-            <div class="alternativa">
-              <span>JDK é usado para executar aplicações, JRE para desenvolver</span>
-            </div>
-            <div class="alternativa">
-              <span>Não há diferença entre JDK e JRE</span>
-            </div>
-            <div class="alternativa">
-              <span>JRE é mais moderno que JDK</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Questão 2 - Dissertativa -->
-        <div class="questao-card resultado">
-          <div class="questao-header">
-            <span class="questao-numero">Questão 2</span>
-            <span class="questao-tipo">Dissertativa</span>
-          </div>
-          <h3 class="questao-enunciado">Explique o conceito de Polimorfismo em POO com um exemplo.</h3>
-          <div class="resposta-dissertativa">
-            <h4>Sua resposta:</h4>
-            <p>Polimorfismo é a capacidade de um objeto assumir várias formas. Por exemplo, uma classe Animal pode ter
-              um método fazerSom(), e as classes Cachorro e Gato que herdam de Animal podem implementar esse método de
-              formas diferentes.</p>
-          </div>
-          <div class="gabarito-dissertativa">
-            <h4>Gabarito:</h4>
-            <p>Polimorfismo permite que objetos de diferentes classes sejam tratados através de uma interface comum,
-              respondendo de forma específica a cada classe.</p>
-          </div>
-        </div>
-
-        <!-- Questão 3 - Incorreta -->
-        <div class="questao-card resultado incorreta">
-          <div class="questao-header">
-            <span class="questao-numero">Questão 3</span>
-            <span class="questao-tipo">Alternativa</span>
-            <span class="badge-status incorreto">
+            <span class="badge-status incorreto" th:if="${estaCorreta != null && !estaCorreta}">
               <i class="ti ti-x"></i>
               Incorreta
             </span>
           </div>
-          <h3 class="questao-enunciado">O que significa o princípio SOLID?</h3>
-          <div class="alternativas">
-            <div class="alternativa selecionada incorreta">
-              <i class="ti ti-circle-x"></i>
-              <span>Um framework para desenvolvimento Java</span>
+          <h3 class="questao-enunciado" th:text="${item.enunciado}">Enunciado</h3>
+
+          <!-- Alternativas (apenas para ItemAlternativa) -->
+          <div class="alternativas" th:if="${item.class.simpleName == 'ItemAlternativa'}">
+            <div th:each="alternativa, altIterStat : ${item.alternativas}" class="alternativa"
+              th:classappend="${resposta != null && resposta.alternativaSelecionada == altIterStat.index ? 'selecionada' : ''} + ' ' + ${alternativa == item.respostaCorreta ? (resposta != null && resposta.alternativaSelecionada == altIterStat.index ? 'correta' : 'correta-gabarito') : (resposta != null && resposta.alternativaSelecionada == altIterStat.index ? 'incorreta' : '')}">
+              <i class="ti ti-circle-check"
+                th:if="${resposta != null && resposta.alternativaSelecionada == altIterStat.index && alternativa == item.respostaCorreta}"></i>
+              <i class="ti ti-circle-x"
+                th:if="${resposta != null && resposta.alternativaSelecionada == altIterStat.index && alternativa != item.respostaCorreta}"></i>
+              <i class="ti ti-check"
+                th:if="${resposta != null && resposta.alternativaSelecionada != altIterStat.index && alternativa == item.respostaCorreta}"></i>
+              <span th:text="${alternativa}">Alternativa</span>
             </div>
-            <div class="alternativa correta-gabarito">
-              <i class="ti ti-check"></i>
-              <span>Um conjunto de boas práticas de programação orientada a objetos</span>
+          </div>
+
+          <!-- Resposta Dissertativa -->
+          <div th:if="${item.class.simpleName == 'ItemDissertativa'}">
+            <div class="resposta-dissertativa">
+              <h4>Sua resposta:</h4>
+              <p th:text="${resposta != null ? resposta.textoResposta : 'Sem resposta'}">Texto da resposta</p>
             </div>
-            <div class="alternativa">
-              <span>Uma linguagem de programação</span>
-            </div>
-            <div class="alternativa">
-              <span>Um padrão de design de banco de dados</span>
+            <div class="gabarito-dissertativa">
+              <h4>Gabarito:</h4>
+              <p th:text="${item.gabarito}">Gabarito esperado</p>
             </div>
           </div>
         </div>
@@ -116,15 +88,15 @@
         <div class="resumo-resultado">
           <div class="estatistica">
             <i class="ti ti-circle-check"></i>
-            <span><strong>2</strong> corretas</span>
+            <span><strong th:text="${resultado.quantidadeCorretas()}">0</strong> corretas</span>
           </div>
           <div class="estatistica">
             <i class="ti ti-circle-x"></i>
-            <span><strong>1</strong> incorreta</span>
+            <span><strong th:text="${resultado.quantidadeIncorretas()}">0</strong> incorretas</span>
           </div>
           <div class="estatistica">
             <i class="ti ti-calculator"></i>
-            <span>Total: <strong>3</strong> questões</span>
+            <span>Total: <strong th:text="${resultado.questionario.quantidadeItens()}">0</strong> questões</span>
           </div>
         </div>
       </div>

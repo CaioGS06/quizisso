@@ -17,7 +17,8 @@
           Voltar
         </button>
         <div class="info-questionario">
-          <input type="text" class="campo-titulo-edicao" value="Meu Quiz de JavaScript">
+          <input type="text" class="campo-titulo-edicao" th:value="${questionario.titulo}"
+            placeholder="Título do Questionário">
           <button class="botao-excluir-questionario" onclick="abrirModalExcluirQuestionario()">
             <i class="ti ti-trash"></i>
             Excluir Questionário
@@ -26,37 +27,28 @@
       </div>
 
       <form class="formulario-questionario">
-        <!-- Questão 1 em Edição -->
-        <div class="questao-card edicao">
+        <!-- Loop através dos itens do questionário -->
+        <div class="questao-card edicao" th:each="item, iterStat : ${questionario.itens}">
           <div class="questao-header">
-            <span class="questao-numero">Questão 1</span>
+            <span class="questao-numero" th:text="'Questão ' + ${iterStat.count}">Questão 1</span>
             <select class="select-tipo-questao">
-              <option value="alternativa" selected>Alternativa</option>
-              <option value="dissertativa">Dissertativa</option>
+              <option value="alternativa" th:selected="${item.class.simpleName == 'ItemAlternativa'}">Alternativa
+              </option>
+              <option value="dissertativa" th:selected="${item.class.simpleName == 'ItemDissertativa'}">Dissertativa
+              </option>
             </select>
             <button type="button" class="botao-remover-questao" onclick="removerQuestao(this)">
               <i class="ti ti-x"></i>
             </button>
           </div>
-          <input type="text" class="campo-enunciado" value="O que é JavaScript?" placeholder="Digite o enunciado...">
-          <div class="alternativas-edicao">
-            <div class="alternativa-edicao">
-              <input type="radio" name="correta1" checked>
-              <input type="text" class="campo-alternativa" value="Uma linguagem de programação">
-              <button type="button" class="botao-remover-alternativa" onclick="removerAlternativa(this)">
-                <i class="ti ti-x"></i>
-              </button>
-            </div>
-            <div class="alternativa-edicao">
-              <input type="radio" name="correta1">
-              <input type="text" class="campo-alternativa" value="Um framework CSS">
-              <button type="button" class="botao-remover-alternativa" onclick="removerAlternativa(this)">
-                <i class="ti ti-x"></i>
-              </button>
-            </div>
-            <div class="alternativa-edicao">
-              <input type="radio" name="correta1">
-              <input type="text" class="campo-alternativa" value="Um banco de dados">
+          <input type="text" class="campo-enunciado" th:value="${item.enunciado}" placeholder="Digite o enunciado...">
+
+          <!-- Alternativas (apenas para ItemAlternativa) -->
+          <div class="alternativas-edicao" th:if="${item.class.simpleName == 'ItemAlternativa'}">
+            <div class="alternativa-edicao" th:each="alternativa, altIterStat : ${item.alternativas}">
+              <input type="radio" th:name="'correta' + ${iterStat.count}"
+                th:checked="${alternativa == item.respostaCorreta}">
+              <input type="text" class="campo-alternativa" th:value="${alternativa}" placeholder="Digite a alternativa">
               <button type="button" class="botao-remover-alternativa" onclick="removerAlternativa(this)">
                 <i class="ti ti-x"></i>
               </button>
@@ -66,24 +58,10 @@
               Adicionar Alternativa
             </button>
           </div>
-        </div>
 
-        <!-- Questão 2 em Edição -->
-        <div class="questao-card edicao">
-          <div class="questao-header">
-            <span class="questao-numero">Questão 2</span>
-            <select class="select-tipo-questao">
-              <option value="alternativa">Alternativa</option>
-              <option value="dissertativa" selected>Dissertativa</option>
-            </select>
-            <button type="button" class="botao-remover-questao" onclick="removerQuestao(this)">
-              <i class="ti ti-x"></i>
-            </button>
-          </div>
-          <input type="text" class="campo-enunciado" value="Explique a diferença entre var, let e const."
-            placeholder="Digite o enunciado...">
-          <textarea class="campo-gabarito" placeholder="Digite o gabarito/resposta esperada..."
-            rows="4">var tem escopo de função, let e const têm escopo de bloco. const não pode ser reatribuído.</textarea>
+          <!-- Gabarito (apenas para ItemDissertativa) -->
+          <textarea class="campo-gabarito" th:if="${item.class.simpleName == 'ItemDissertativa'}"
+            placeholder="Digite o gabarito/resposta esperada..." rows="4" th:text="${item.gabarito}"></textarea>
         </div>
 
         <div class="acoes-formulario">

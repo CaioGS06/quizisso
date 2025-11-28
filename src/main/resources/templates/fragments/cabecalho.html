@@ -3,7 +3,7 @@
 
 <head th:fragment="head">
   <meta charset="UTF-8">
-  <link rel="stylesheet" href="/css/home.css">
+  <link rel="stylesheet" href="/css/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -16,7 +16,9 @@
   <div th:fragment="cabecalho">
     <header class="cabecalho">
       <div class="logo">
-        <img src="/img/logo.jpg" alt="Quizisso" class="logo-image">
+        <a href="/">
+          <img src="/img/logo.jpg" alt="Quizisso" class="logo-image">
+        </a>
       </div>
 
       <nav class="menu-navegacao">
@@ -39,14 +41,14 @@
       <div class="secao-usuario">
         <div class="perfil-usuario-container" onclick="alternarMenuUsuario()">
           <div class="perfil-usuario">
-            <img src="/img/usuario-camarao.jpg" alt="Foto do usuário" class="foto-usuario">
+            <img th:src="@{'/img/' + ${usuarioFoto}}" alt="Foto do usuário" class="foto-usuario">
           </div>
-          <span class="nome-usuario-mobile">Caio GS</span>
+          <span class="nome-usuario-mobile" th:text="${usuarioNome}">Usuário</span>
         </div>
         <div class="menu-usuario" id="menuUsuario">
           <div class="info-usuario-menu">
-            <img src="/img/usuario-camarao.jpg" alt="Foto do usuário" class="foto-usuario-menu">
-            <span class="nome-usuario-menu">Caio GS</span>
+            <img th:src="@{'/img/' + ${usuarioFoto}}" alt="Foto do usuário" class="foto-usuario-menu">
+            <span class="nome-usuario-menu" th:text="${usuarioNome}">Usuário</span>
           </div>
           <a href="#" class="item-menu-usuario" onclick="abrirModalAlterarFoto(event); return false;">
             <i class="ti ti-photo"></i>
@@ -73,17 +75,24 @@
             <i class="ti ti-x"></i>
           </button>
         </div>
-        <div class="modal-corpo">
-          <p>Selecione uma nova foto para seu perfil:</p>
-          <input type="file" accept="image/*" class="campo-formulario">
-        </div>
-        <div class="modal-footer">
-          <button class="botao-cancelar" onclick="fecharModalAlterarFoto()">Cancelar</button>
-          <button class="botao-confirmar" onclick="confirmarAlterarFoto()">
-            <i class="ti ti-check"></i>
-            Confirmar
-          </button>
-        </div>
+        <form method="POST" action="/alterar-foto">
+          <div class="modal-corpo">
+            <p>Selecione uma nova foto para seu perfil:</p>
+            <div class="grade-fotos">
+              <label class="opcao-foto" th:each="foto : ${fotosDisponiveis}">
+                <input type="radio" name="novaFoto" th:value="${foto.id}" required>
+                <img th:src="@{'/img/' + ${foto.nomeArquivo}}" th:alt="${foto.descricao}">
+              </label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="botao-cancelar" onclick="fecharModalAlterarFoto()">Cancelar</button>
+            <button type="submit" class="botao-confirmar">
+              <i class="ti ti-check"></i>
+              Confirmar
+            </button>
+          </div>
+        </form>
       </div>
     </div>
 
@@ -95,17 +104,20 @@
             <i class="ti ti-x"></i>
           </button>
         </div>
-        <div class="modal-corpo">
-          <p>Digite seu novo nome:</p>
-          <input type="text" id="campoNovoNome" class="campo-formulario" placeholder="Novo nome">
-        </div>
-        <div class="modal-footer">
-          <button class="botao-cancelar" onclick="fecharModalAlterarNome()">Cancelar</button>
-          <button class="botao-confirmar" onclick="confirmarAlterarNome()">
-            <i class="ti ti-check"></i>
-            Confirmar
-          </button>
-        </div>
+        <form method="POST" action="/alterar-nome">
+          <div class="modal-corpo">
+            <p>Digite seu novo nome:</p>
+            <input type="text" name="novoNome" id="campoNovoNome" class="campo-formulario" placeholder="Novo nome"
+              required th:value="${usuarioNome}">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="botao-cancelar" onclick="fecharModalAlterarNome()">Cancelar</button>
+            <button type="submit" class="botao-confirmar">
+              <i class="ti ti-check"></i>
+              Confirmar
+            </button>
+          </div>
+        </form>
       </div>
     </div>
 
@@ -122,17 +134,17 @@
         </div>
         <div class="modal-footer">
           <button class="botao-cancelar" onclick="fecharModalLogout()">Cancelar</button>
-          <button class="botao-confirmar-excluir" onclick="confirmarLogout()">
+          <a href="/logout" class="botao-confirmar-excluir">
             <i class="ti ti-logout"></i>
             Sair
-          </button>
+          </a>
         </div>
       </div>
     </div>
   </div>
 
   <div th:fragment="scripts">
-    <script src="/js/home.js"></script>
+    <script src="/js/script.js"></script>
   </div>
 </body>
 

@@ -27,10 +27,12 @@ body {
   display: flex;
   align-items: center;
   cursor: pointer;
-  /* background-color: black;
-  padding: 8px 12px; */
   border: 2px solid white;
   border-radius: 4px;
+}
+
+.cabecalho .logo a {
+  height: 40px;
 }
 
 .logo-image {
@@ -205,7 +207,7 @@ body {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-.imagem-questionario {
+.banner-questionario {
   width: 100%;
   height: 200px;
   background-color: #ecf0f1;
@@ -215,7 +217,7 @@ body {
   justify-content: center;
 }
 
-.imagem-questionario img {
+.banner-questionario img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -265,6 +267,34 @@ body {
   font-size: 18px;
 }
 
+/* Mensagem de Lista Vazia */
+.mensagem-vazia {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #95a5a6;
+  text-align: center;
+}
+
+.mensagem-vazia i {
+  font-size: 80px;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+.mensagem-vazia p {
+  font-size: 18px;
+  margin: 5px 0;
+}
+
+.mensagem-vazia p:first-of-type {
+  font-weight: 600;
+  color: #7f8c8d;
+}
+
 /* Cabeçalho de Seção */
 .cabecalho-secao {
   display: flex;
@@ -283,6 +313,7 @@ body {
   background-color: #3498db;
   color: white;
   border: none;
+  margin: -7px 0;
   padding: 12px 24px;
   border-radius: 6px;
   font-size: 16px;
@@ -994,4 +1025,204 @@ body {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
   }
+}
+
+/* Grade de Fotos para Modal */
+.grade-fotos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.opcao-foto {
+  position: relative;
+  cursor: pointer;
+  border: 3px solid transparent;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.opcao-foto:hover {
+  border-color: #667eea;
+  transform: scale(1.05);
+}
+
+.opcao-foto input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+}
+
+.opcao-foto img {
+  width: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 0.7;
+  transition: opacity 0.3s;
+}
+
+.opcao-foto:has(input:checked) {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.opcao-foto:has(input:checked) img {
+  opacity: 1;
+}
+
+/* Estilos da Página de Login */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.login-card {
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.login-header .logo {
+  display: inline-flex;
+  cursor: default;
+  border: none;
+  border-radius: 0px;
+  margin-bottom: 15px;
+}
+
+.login-header .logo-image {
+  height: 60px;
+  border: 3px solid white;
+  border-radius: 12px;
+}
+
+.login-header p {
+  color: #666;
+  margin-top: 5px;
+  font-size: 18px;
+}
+
+.erro-login {
+  background: #fee;
+  color: #c33;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Mensagens de Erro e Sucesso (gerais) */
+.mensagem-erro {
+  background: #fee;
+  color: #c33;
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-left: 4px solid #e74c3c;
+}
+
+.mensagem-erro i {
+  font-size: 24px;
+}
+
+.mensagem-sucesso {
+  background: #eeffee;
+  color: #2a7d2a;
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-left: 4px solid #27ae60;
+}
+
+.mensagem-sucesso i {
+  font-size: 24px;
+}
+
+.usuarios-exemplo {
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 2px solid #e0e0e0;
+}
+
+.usuarios-exemplo h3 {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.lista-usuarios {
+  display: grid;
+  gap: 10px;
+}
+
+.usuario-exemplo {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.usuario-exemplo:hover {
+  background: #f0f0f0;
+}
+
+.usuario-exemplo img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 12px;
+}
+
+.usuario-exemplo-info {
+  flex: 1;
+}
+
+.usuario-exemplo-nome {
+  font-weight: bold;
+  color: #333;
+  font-size: 14px;
+}
+
+.usuario-exemplo-email {
+  color: #666;
+  font-size: 12px;
+}
+
+.botao-login {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.botao-login:hover {
+  transform: translateY(-2px);
 }

@@ -5,36 +5,45 @@ actor "Usuário" as usuario
 actor "Criador" as criador
 actor "Respondente" as respondente
 
-usuario --|> criador
+criador <|- usuario 
 usuario --|> respondente
 
 usecase "Criar questionário" as criar_questionario
-usecase "Exibir questionários" as exibir_questionarios
+usecase "Exibir questionários criados" as exibir_questionarios_criados
 usecase "Editar questionário" as editar_questionario
 usecase "Apagar questionário" as apagar_questionario
 usecase "Criar item" as criar_item
 usecase "Editar item" as editar_item
 usecase "Remover item" as remover_item
+usecase "Exibir respostas" as exibir_respostas
+usecase "Validar resposta" as validar_resposta
+usecase "Apagar resposta" as apagar_resposta
+usecase "Exibir questionários" as exibir_questionarios
 usecase "Responder questionário" as responder_questionario
 usecase "Responder item" as responder_item
 usecase "Editar resposta" as editar_resposta
 usecase "Remover resposta" as remover_resposta
 usecase "Exibir resultado" as exibir_resultado
 
-criador -- criar_questionario
-criador -- exibir_questionarios
+criar_questionario - criador 
+criador - exibir_questionarios_criados
 respondente -- exibir_questionarios
 
-criar_questionario .> criar_item : <<include>>
-editar_questionario <. criar_item : <<extend>>
-editar_questionario <. editar_item : <<extend>>
-editar_questionario <. remover_item : <<extend>>
+criar_questionario ..> criar_item : <<include>>
+criar_item ..> editar_questionario : <<extend>>
+editar_item .> editar_questionario : <<extend>>
+editar_questionario <.. remover_item : <<extend>>
+editar_questionario .> exibir_questionarios_criados : <<extend>>
+exibir_questionarios_criados <.. apagar_questionario : <<extend>>
+exibir_questionarios_criados <.. exibir_respostas : <<extend>>
+validar_resposta .> exibir_respostas : <<extend>>
+exibir_respostas <. apagar_resposta : <<extend>>
+exibir_questionarios_criados <. exibir_resultado : <<extend>>
 
-exibir_questionarios <. editar_questionario : <<extend>>
-exibir_questionarios <. exibir_resultado : <<extend>>
-exibir_questionarios <. apagar_questionario : <<extend>>
+exibir_resultado .> exibir_questionarios : <<extend>>
 exibir_questionarios <. responder_questionario : <<extend>>
-responder_questionario .> responder_item : <<include>>
+responder_item <.. responder_questionario : <<include>>
 responder_item <. editar_resposta : <<extend>>
-responder_item <. remover_resposta : <<extend>>
+remover_resposta ..> responder_item : <<extend>>
+
 @enduml 

@@ -1,22 +1,65 @@
 @startuml diagrama_classes
-' --- Classe Principal (Plataforma) ---
-' NOVO: Esta classe gerencia os repositórios e
-' orquestra as ações dos casos de uso.
-class Plataforma {
-  - _listaUsuarios: List<Usuario>
-  - _listaQuestionarios: List<Questionario>
-  - _listaResultados: List<ResultadoQuestionario>
 
-  + cadastrarUsuario(usuario: Usuario)
-  + login(email: String, senha: String): Usuario
-  + criarQuestionario(builder: Builder): Questionario
-  + apagarQuestionario(questionario: Questionario, criador: Usuario)
-  + buscarQuestionarios(): List<Questionario>
-  + buscarQuestionariosPorCriador(criador: Usuario): List<Questionario>
-  + submeterRespostas(resultado: ResultadoQuestionario)
-  + buscarResultado(questionario: Questionario, respondente: Usuario): ResultadoQuestionario
-  + removerResultado(resultado: ResultadoQuestionario)
+' ============================================================================
+' CAMADA DE SERVIÇOS (Lógica de Negócio)
+' Representa a orquestração dos casos de uso do sistema
+' ============================================================================
+package "Camada de Serviços" <<Rectangle>> {
+  class QuestionarioService {
+    + listarTodos(): List<Questionario>
+    + listarPorCriador(criadorId: Long): List<Questionario>
+    + buscarPorId(id: Long): Questionario
+    + criarQuestionario(titulo, criador, descricao, idBanner): Questionario
+    + salvar(questionario: Questionario)
+    + atualizar(questionario: Questionario, editor: Usuario)
+    + apagarQuestionario(questionarioId: Long, usuario: Usuario)
+    + adicionarItemEPersistir(questionarioId, item, editor): Long
+    + removerItemEDeletar(questionarioId, itemId, editor)
+    + editarItemEPersistir(questionarioId, item, editor)
+  }
+
+  class UsuarioService {
+    + autenticar(email: String, senha: String): Usuario
+    + buscarPorId(id: Long): Usuario
+    + cadastrarUsuario(usuario: Usuario): Long
+    + atualizarNome(id: Long, novoNome: String)
+    + atualizarFoto(id: Long, novoIdFoto: int)
+    + alterarSenha(id: Long, senhaAntiga, senhaNova)
+  }
+
+  class ResultadoService {
+    + listarPorRespondente(respondenteId: Long): List<ResultadoQuestionario>
+    + criarResultado(questionario, respondente): ResultadoQuestionario
+    + buscarPorId(id: Long): ResultadoQuestionario
+    + buscarResultado(questionario, respondente): ResultadoQuestionario
+    + submeterRespostas(resultado: ResultadoQuestionario): Long
+    + removerResultado(resultadoId: Long, usuario: Usuario)
+    + finalizarResultado(resultado: ResultadoQuestionario)
+  }
+
+  class ItemService {
+    + listarPorQuestionario(questionarioId: Long): List<Item<?>>
+    + buscarPorId(id: Long): Item<?>
+    + salvar(item: Item<?>, questionarioId: Long): Long
+    + atualizar(item: Item<?>)
+    + deletar(id: Long)
+  }
+
+  class RespostaService {
+    + listarPorResultado(resultadoId: Long): List<Resposta>
+    + buscarPorId(id: Long): Resposta
+    + salvar(resposta: Resposta, resultadoId: Long): Long
+    + atualizar(resposta: Resposta)
+    + deletar(id: Long)
+  }
 }
+
+note right of QuestionarioService
+  Os Services representam a camada de
+  lógica de negócio da aplicação.
+  Eles orquestram os casos de uso e
+  delegam a persistência para os DAOs.
+end note
 
 ' --- Classe de Resultado (Respostas) ---
 ' NOVO: Esta classe representa a submissão de um
@@ -34,6 +77,9 @@ class ResultadoQuestionario {
   + obterRespostas(): List<Resposta> {readonly}
   + obterRespondente(): Usuario
   + obterQuestionario(): Questionario
+  + obterPontuacaoTotal(): double
+  + obterPontuacaoMaxima(): double
+  + obterPercentualAcerto(): double
 }
 
 
@@ -45,7 +91,6 @@ class Questionario {
   - _criador: Usuario
   - _idBanner: int
   - _dataCriacao: LocalDate
-  - _categorias: List<Categoria>
 
   ~ Questionario(builder: Builder)
   + obterTitulo(): String
@@ -54,13 +99,11 @@ class Questionario {
   + obterCriador(): Usuario
   + obterIdBanner(): int
   + obterDataCriacao(): LocalDate
-  + obterCategorias(): List<Categoria> {readonly}
+  + obterPontuacaoMaxima(): double
   + adicionarItem(item: Item)
   + removerItem(item: Item)
   + alterarTitulo(titulo: String)
   + alterarDescricao(descricao: String)
-  + adicionarCategoria(categoria: Categoria)
-  + removerCategoria(categoria: Categoria)
 }
 
 ' --- Classe Builder (Inalterada) ---
@@ -93,38 +136,39 @@ class Usuario {
   + definirFoto(idFoto: int)
 }
 
-enum Categoria {
-  QUIZ,
-  PERSONALIDADE
-}
-
 ' --- Hierarquia de Itens (com Edição) ---
 abstract class Item<T extends Resposta> {
   # _enunciado: String
+  # _pontuacaoMaxima: double
 
-  + Item(enunciado: String)
+  + Item(enunciado: String, pontuacaoMaxima: double)
   + obterEnunciado(): String
+  + obterPontuacaoMaxima(): double
   + {abstract} repostaEstaCorreta(resposta: T): bool
+  + {abstract} calcularPontuacao(resposta: T): double
   + alterarEnunciado(enunciado: String)
+  + alterarPontuacaoMaxima(pontuacaoMaxima: double)
 }
 
 class QuestaoDissertativa extends Item<RespostaDissertativa> {
   - _gabarito: String
 
-  + QuestaoDissertativa(enunciado: String, gabarito: String)
+  + QuestaoDissertativa(enunciado: String, gabarito: String, pontuacaoMaxima: double)
   + obterGabarito(): String
   + repostaEstaCorreta(resposta: RespostaDissertativa): bool
+  + calcularPontuacao(resposta: RespostaDissertativa): double
   + alterarGabarito(gabarito: String)
 }
 
 class QuestaoAlternativa extends Item<RespostaAlternativa> {
   - _listaAlternativas: List<Alternativa>
 
-  + QuestaoAlternativa(enunciado: String)
+  + QuestaoAlternativa(enunciado: String, pontuacaoMaxima: double)
   + obterListaAlternativas(): List<Alternativa> {readonly}
   + adicionarAlternativa(alternativa: Alternativa)
   + adicionarAlternativa(descricao: String, estaCorreta: bool)
   + repostaEstaCorreta(resposta: RespostaAlternativa): bool
+  + calcularPontuacao(resposta: RespostaAlternativa): double
   + removerAlternativa(alternativa: Alternativa)
   + editarAlternativa(antiga: Alternativa, nova: Alternativa)
 }
@@ -143,17 +187,20 @@ class Alternativa {
 
 ' --- Hierarquia de Respostas (com Edição) ---
 abstract class Resposta {
-  # _respondente: Usuario {readonly}
+  # _itemId: Long {readonly}
   # _dataResposta: LocalDate {readonly}
+  # _pontuacaoObtida: double
 
-  + Resposta(respondente: Usuario)
-  + obterRespondente(): Usuario
+  + Resposta(itemId: Long)
+  + obterItemId(): Long
+  + obterPontuacaoObtida(): double
+  + definirPontuacaoObtida(pontuacao: double)
 }
 
 class RespostaDissertativa extends Resposta {
-  - _texto: String
+  - _texto_resposta: String
 
-  + RespostaDissertativa(respondente: Usuario, texto: String)
+  + RespostaDissertativa(itemId: Long, texto: String)
   + obterTexto(): String
   + alterarTexto(texto: String)
 }
@@ -169,26 +216,32 @@ class RespostaAlternativa extends Resposta {
 
 ' --- Relacionamentos ---
 ' Composição (HAS-MANY, dono controla ciclo de vida)
-Usuario "*" --* Plataforma : "gerencia"
-Questionario "*" --* Plataforma : "gerencia"
-Plataforma *-- "*" ResultadoQuestionario : "gerencia"
-
-Questionario *-- "1..*" Item : "contém"
-QuestaoAlternativa *-- "2..*" Alternativa : "contém"
-ResultadoQuestionario *-- "1..*" Resposta : "contém"
+Item "1..*" -* Questionario : "contém"
+QuestaoAlternativa *- "2..*" Alternativa : "contém"
+Resposta "1..*" -* ResultadoQuestionario : "contém"
 
 ' Agregação (HAS-A, usa objeto externo)
-Questionario o- "1" Usuario : "criado por"
-Categoria "*" -o Questionario : "classificado em"
-Questionario "1" --o ResultadoQuestionario : "refere-se a"
-Usuario "1" --o ResultadoQuestionario : "submetido por"
-Usuario "1" --o Resposta : "dada por"
-RespostaAlternativa o-- "1" Alternativa : "seleciona"
+Usuario "1" -o Questionario : "criado por"
+ResultadoQuestionario o- "1" Questionario : "refere-se a"
+ResultadoQuestionario o-- "1" Usuario : "submetido por"
+Resposta o- "1" Usuario : "dada por"
+Alternativa "1" -o RespostaAlternativa : "seleciona"
 
 ' Dependência (Usa)
 Item .> Resposta
-Builder <.. Plataforma : "usa para criar"
 
 ' Relacionamento: Builder "cria" o Questionario
-Questionario +-> Builder : "cria"
+Questionario +--> Builder : "cria"
+
+' Relacionamentos: Services usam as entidades de domínio
+QuestionarioService .> Questionario : "gerencia"
+QuestionarioService ..> Item : "gerencia"
+UsuarioService ..> Usuario : "gerencia"
+ResultadoService ..> ResultadoQuestionario : "gerencia"
+Item <. ItemService : "gerencia"
+RespostaService ..> Resposta : "gerencia"
+
+' Relacionamentos entre Services
+QuestionarioService .> ItemService : "usa"
+RespostaService <. ResultadoService : "usa"
 @enduml

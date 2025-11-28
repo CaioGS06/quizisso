@@ -15,75 +15,32 @@
     </div>
 
     <div class="grade-questionarios">
-      <!-- Quiz 1 -->
-      <div class="card-questionario" onclick="window.location.href='/responder-questionario'">
-        <div class="imagem-questionario">
-          <img src="/img/questionario-padrao.jpg" alt="Quiz sobre Programação">
+      <!-- 
+        Loop através da lista de questionários usando th:each
+        Cada item da lista fica disponível na variável "quiz"
+      -->
+      <div class="card-questionario" th:each="quiz : ${questionarios}"
+        th:onclick="'window.location.href=\'/responder-questionario?id=' + ${quiz.id} + '\''">
+        <div class="banner-questionario">
+          <!-- 
+            th:src - Atributo dinâmico do Thymeleaf
+            ${quiz.nomeImagem} acessa o método getNomeImagem() do objeto
+          -->
+          <img th:src="@{'/img/questionario' + ${quiz.bannerId} + '.jpg'}" th:alt="${quiz.titulo}"
+            alt="Banner do questionário">
         </div>
-        <h3 class="titulo-questionario">Quiz de Programação Java</h3>
-        <div class="info-criador">
-          <img src="/img/usuario-peixe.jpg" alt="Foto do criador" class="foto-criador">
-          <span class="nome-criador">João Silva</span>
-        </div>
-      </div>
 
-      <!-- Quiz 2 -->
-      <div class="card-questionario" onclick="window.location.href='/responder-questionario'">
-        <div class="imagem-questionario">
-          <img src="/img/questionario-padrao.jpg" alt="Quiz sobre História">
-        </div>
-        <h3 class="titulo-questionario">História do Brasil</h3>
-        <div class="info-criador">
-          <img src="/img/usuario-sapo.jpg" alt="Foto do criador" class="foto-criador">
-          <span class="nome-criador">Maria Santos</span>
-        </div>
-      </div>
+        <!-- th:text substitui o conteúdo da tag pelo valor da expressão -->
+        <h3 class="titulo-questionario" th:text="${quiz.titulo}">Título do Quiz</h3>
 
-      <!-- Quiz 3 -->
-      <div class="card-questionario" onclick="window.location.href='/responder-questionario'">
-        <div class="imagem-questionario">
-          <img src="/img/questionario-padrao.jpg" alt="Quiz sobre Matemática">
-        </div>
-        <h3 class="titulo-questionario">Matemática Básica</h3>
         <div class="info-criador">
-          <img src="/img/usuario-corvo.jpg" alt="Foto do criador" class="foto-criador">
-          <span class="nome-criador">Pedro Costa</span>
-        </div>
-      </div>
-
-      <!-- Quiz 4 -->
-      <div class="card-questionario" onclick="window.location.href='/responder-questionario'">
-        <div class="imagem-questionario">
-          <img src="/img/questionario-padrao.jpg" alt="Quiz sobre Geografia">
-        </div>
-        <h3 class="titulo-questionario">Capitais do Mundo</h3>
-        <div class="info-criador">
-          <img src="/img/usuario-camarao.jpg" alt="Foto do criador" class="foto-criador">
-          <span class="nome-criador">Ana Lima</span>
-        </div>
-      </div>
-
-      <!-- Quiz 5 -->
-      <div class="card-questionario" onclick="window.location.href='/responder-questionario'">
-        <div class="imagem-questionario">
-          <img src="/img/questionario-padrao.jpg" alt="Quiz sobre Ciências">
-        </div>
-        <h3 class="titulo-questionario">Ciências Naturais</h3>
-        <div class="info-criador">
-          <img src="/img/usuario-peixe.jpg" alt="Foto do criador" class="foto-criador">
-          <span class="nome-criador">Carlos Souza</span>
-        </div>
-      </div>
-
-      <!-- Quiz 6 -->
-      <div class="card-questionario" onclick="window.location.href='/responder-questionario'">
-        <div class="imagem-questionario">
-          <img src="/img/questionario-padrao.jpg" alt="Quiz sobre Literatura">
-        </div>
-        <h3 class="titulo-questionario">Literatura Brasileira</h3>
-        <div class="info-criador">
-          <img src="/img/usuario-sapo.jpg" alt="Foto do criador" class="foto-criador">
-          <span class="nome-criador">Juliana Alves</span>
+          <!-- 
+            Acessa propriedades aninhadas: quiz.criador.fotoId
+            Isso chama quiz.getCriador().getFotoId()
+          -->
+          <img th:src="@{'/img/usuario' + ${quiz.criador.fotoId} + '.jpg'}" th:alt="${quiz.criador.nome}"
+            class="foto-criador" alt="Foto do criador">
+          <span class="nome-criador" th:text="${quiz.criador.nome}">Nome do Criador</span>
         </div>
       </div>
     </div>

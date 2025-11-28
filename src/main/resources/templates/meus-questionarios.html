@@ -19,28 +19,20 @@
     </div>
 
     <div class="grade-questionarios">
-      <!-- Questionário do usuário 1 -->
-      <div class="card-questionario" onclick="window.location.href='/editar-questionario'">
+      <!-- Loop através dos questionários do usuário -->
+      <div class="card-questionario" th:each="quiz : ${questionarios}"
+        th:onclick="'window.location.href=\'/editar-questionario?id=' + ${quiz.id} + '\''">
         <div class="imagem-questionario">
-          <img src="/img/questionario-padrao.jpg" alt="Meu Quiz de JavaScript">
+          <img th:src="@{'/img/' + ${quiz.nomeImagem}}" th:alt="${quiz.titulo}" alt="Imagem do questionário">
         </div>
-        <h3 class="titulo-questionario">Meu Quiz de JavaScript</h3>
+        <h3 class="titulo-questionario" th:text="${quiz.titulo}">Título do Quiz</h3>
       </div>
 
-      <!-- Questionário do usuário 2 -->
-      <div class="card-questionario" onclick="window.location.href='/editar-questionario'">
-        <div class="imagem-questionario">
-          <img src="/img/questionario-padrao.jpg" alt="Quiz de Spring Boot">
-        </div>
-        <h3 class="titulo-questionario">Quiz de Spring Boot</h3>
-      </div>
-
-      <!-- Questionário do usuário 3 -->
-      <div class="card-questionario" onclick="window.location.href='/editar-questionario'">
-        <div class="imagem-questionario">
-          <img src="/img/questionario-padrao.jpg" alt="Teste de SQL">
-        </div>
-        <h3 class="titulo-questionario">Teste de SQL</h3>
+      <!-- Mensagem quando não houver questionários -->
+      <div th:if="${#lists.isEmpty(questionarios)}" class="mensagem-vazia">
+        <i class="ti ti-notebook-off"></i>
+        <p>Você ainda não criou nenhum questionário.</p>
+        <p>Clique em "Criar Questionário" para começar!</p>
       </div>
     </div>
   </main>

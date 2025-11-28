@@ -15,68 +15,30 @@
     </div>
 
     <div class="grade-questionarios">
-      <!-- Questionário respondido 1 -->
-      <div class="card-questionario" onclick="window.location.href='/visualizar-resultado'">
+      <!-- Loop através dos questionários respondidos -->
+      <div class="card-questionario" th:each="resultado : ${resultados}"
+        th:onclick="'window.location.href=\'/visualizar-resultado?questionarioId=' + ${resultado.questionario.id} + '\''">
         <div class="imagem-questionario">
-          <img src="/img/questionario-padrao.jpg" alt="Quiz de Programação Java">
+          <img th:src="@{'/img/' + ${resultado.questionario.nomeImagem}}" th:alt="${resultado.questionario.titulo}"
+            alt="Imagem do questionário">
         </div>
-        <h3 class="titulo-questionario">Quiz de Programação Java</h3>
+        <h3 class="titulo-questionario" th:text="${resultado.questionario.titulo}">Título do Quiz</h3>
         <div class="info-criador">
-          <img src="/img/usuario-peixe.jpg" alt="Foto do criador" class="foto-criador">
-          <span class="nome-criador">João Silva</span>
+          <img th:src="@{'/img/' + ${resultado.questionario.criador.nomeFoto}}"
+            th:alt="${resultado.questionario.criador.nome}" class="foto-criador" alt="Foto do criador">
+          <span class="nome-criador" th:text="${resultado.questionario.criador.nome}">Nome do Criador</span>
         </div>
         <div class="nota-badge">
           <i class="ti ti-circle-check"></i>
-          <span>Nota: 8.5/10</span>
+          <span th:text="'Nota: ' + ${#numbers.formatDecimal(resultado.notaFinal, 1, 1)} + '/10'">Nota: 0.0/10</span>
         </div>
       </div>
 
-      <!-- Questionário respondido 2 -->
-      <div class="card-questionario" onclick="window.location.href='/visualizar-resultado'">
-        <div class="imagem-questionario">
-          <img src="/img/questionario-padrao.jpg" alt="História do Brasil">
-        </div>
-        <h3 class="titulo-questionario">História do Brasil</h3>
-        <div class="info-criador">
-          <img src="/img/usuario-sapo.jpg" alt="Foto do criador" class="foto-criador">
-          <span class="nome-criador">Maria Santos</span>
-        </div>
-        <div class="nota-badge">
-          <i class="ti ti-circle-check"></i>
-          <span>Nota: 9.0/10</span>
-        </div>
-      </div>
-
-      <!-- Questionário respondido 3 -->
-      <div class="card-questionario" onclick="window.location.href='/visualizar-resultado'">
-        <div class="imagem-questionario">
-          <img src="/img/questionario-padrao.jpg" alt="Matemática Básica">
-        </div>
-        <h3 class="titulo-questionario">Matemática Básica</h3>
-        <div class="info-criador">
-          <img src="/img/usuario-corvo.jpg" alt="Foto do criador" class="foto-criador">
-          <span class="nome-criador">Pedro Costa</span>
-        </div>
-        <div class="nota-badge">
-          <i class="ti ti-circle-check"></i>
-          <span>Nota: 7.5/10</span>
-        </div>
-      </div>
-
-      <!-- Questionário respondido 4 -->
-      <div class="card-questionario" onclick="window.location.href='/visualizar-resultado'">
-        <div class="imagem-questionario">
-          <img src="/img/questionario-padrao.jpg" alt="Ciências Naturais">
-        </div>
-        <h3 class="titulo-questionario">Ciências Naturais</h3>
-        <div class="info-criador">
-          <img src="/img/usuario-peixe.jpg" alt="Foto do criador" class="foto-criador">
-          <span class="nome-criador">Carlos Souza</span>
-        </div>
-        <div class="nota-badge">
-          <i class="ti ti-circle-check"></i>
-          <span>Nota: 10.0/10</span>
-        </div>
+      <!-- Mensagem quando não houver questionários respondidos -->
+      <div th:if="${#lists.isEmpty(resultados)}" class="mensagem-vazia">
+        <i class="ti ti-circle-check-off"></i>
+        <p>Você ainda não respondeu nenhum questionário.</p>
+        <p>Explore os questionários disponíveis na página inicial!</p>
       </div>
     </div>
   </main>

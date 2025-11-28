@@ -53,12 +53,6 @@ function fecharModalAlterarFoto() {
   document.getElementById('modalAlterarFoto').classList.remove('ativo');
 }
 
-function confirmarAlterarFoto() {
-  // Lógica de alteração de foto aqui
-  alert('Foto alterada com sucesso!');
-  fecharModalAlterarFoto();
-}
-
 function abrirModalAlterarNome(evento) {
   if (evento) evento.preventDefault();
   document.getElementById('modalAlterarNome').classList.add('ativo');
@@ -69,15 +63,6 @@ function fecharModalAlterarNome() {
   document.getElementById('modalAlterarNome').classList.remove('ativo');
 }
 
-function confirmarAlterarNome() {
-  // Lógica de alteração de nome aqui
-  const novoNome = document.getElementById('campoNovoNome').value;
-  if (novoNome.trim()) {
-    alert('Nome alterado para: ' + novoNome);
-    fecharModalAlterarNome();
-  }
-}
-
 function abrirModalLogout(evento) {
   if (evento) evento.preventDefault();
   document.getElementById('modalLogout').classList.add('ativo');
@@ -86,12 +71,6 @@ function abrirModalLogout(evento) {
 
 function fecharModalLogout() {
   document.getElementById('modalLogout').classList.remove('ativo');
-}
-
-function confirmarLogout() {
-  // Lógica de logout aqui
-  alert('Logout realizado!');
-  window.location.href = '/';
 }
 
 function fecharMenuUsuario() {
@@ -129,3 +108,48 @@ window.onclick = function (evento) {
     }
   });
 }
+
+// Validação do formulário de responder questionário
+document.addEventListener('DOMContentLoaded', function () {
+  const formularioQuestionario = document.querySelector('.formulario-questionario');
+
+  if (formularioQuestionario) {
+    formularioQuestionario.addEventListener('submit', function (evento) {
+      // Verifica se todas as questões foram respondidas
+      let todasRespondidas = true;
+      let questaoNaoRespondida = 0;
+
+      // Verifica questões de alternativa (radio buttons)
+      const questoesRadio = formularioQuestionario.querySelectorAll('.alternativas');
+      questoesRadio.forEach((questao, index) => {
+        const radios = questao.querySelectorAll('input[type="radio"]');
+        const algumMarcado = Array.from(radios).some(radio => radio.checked);
+        if (!algumMarcado && todasRespondidas) {
+          todasRespondidas = false;
+          questaoNaoRespondida = index + 1;
+        }
+      });
+
+      // Verifica questões dissertativas
+      const questoesDissertativas = formularioQuestionario.querySelectorAll('.campo-dissertativa');
+      questoesDissertativas.forEach((campo, index) => {
+        if (campo.value.trim() === '' && todasRespondidas) {
+          todasRespondidas = false;
+          questaoNaoRespondida = questoesRadio.length + index + 1;
+        }
+      });
+
+      if (!todasRespondidas) {
+        evento.preventDefault();
+        alert(`Por favor, responda a questão ${questaoNaoRespondida} antes de enviar.`);
+        return false;
+      }
+
+      // Confirmação antes de enviar
+      if (!confirm('Tem certeza que deseja enviar suas respostas? Você não poderá alterá-las depois.')) {
+        evento.preventDefault();
+        return false;
+      }
+    });
+  }
+});

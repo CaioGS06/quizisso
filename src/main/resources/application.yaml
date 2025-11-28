@@ -1,0 +1,20 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: quiz
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/quizisso?characterEncoding=UTF-8&useUnicode=true
+    username: postgres
+    password: s0f0d@o69420
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-init-sql: "SET NAMES 'UTF8'"
+  
+  sql:
+    init:
+      schema-locations: classpath:/schema-postgresql.sql
+      mode: never
+      platform: postgres
