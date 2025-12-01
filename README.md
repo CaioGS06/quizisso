@@ -26,11 +26,15 @@ Projeto desenvolvido para a disciplina de **Programação Orientada a Objetos**,
 
 ## 🛠️ Tecnologias Utilizadas
 
-- **Java 17+**
-- **Spring Boot 3.x**
+- **Java 21**
+- **Spring Boot 3.5.8**
   - Spring Web
-  - Spring Boot DevTools
-- **Thymeleaf** - Template engine para renderização de páginas HTML
+  - Spring Data JDBC
+  - Spring Boot Validation
+  - Thymeleaf
+- **PostgreSQL** - Banco de dados relacional
+- **Maven** - Gerenciamento de dependências
+- **Docker** - Containerização da aplicação
 - **HTML5/CSS3** - Estruturação e estilização
 - **JavaScript** - Interatividade do frontend
 - **Tabler Icons** - Biblioteca de ícones
@@ -39,28 +43,75 @@ Projeto desenvolvido para a disciplina de **Programação Orientada a Objetos**,
 ## 📁 Estrutura do Projeto
 
 ```
-quiz/
+quizisso/
+├── Dockerfile                                 # Configuração Docker para deploy
+├── pom.xml                                    # Configuração Maven e dependências
+├── mvnw / mvnw.cmd                           # Maven Wrapper
+├── diagrama_casos_de_uso.puml                # Diagrama UML de casos de uso
+├── diagrama_classes.puml                     # Diagrama UML de classes
 ├── src/
 │   ├── main/
 │   │   ├── java/br/com/caiogs06/poo/avaliacao/quiz/
-│   │   │   ├── QuizApplication.java          # Classe principal
-│   │   │   └── controller/
-│   │   │       └── HomeController.java       # Controller das rotas
+│   │   │   ├── QuizApplication.java          # Classe principal Spring Boot
+│   │   │   ├── controller/                   # Camada de Controllers (MVC)
+│   │   │   │   ├── BaseController.java       # Controller base com métodos comuns
+│   │   │   │   ├── HomeController.java       # Controller da página inicial
+│   │   │   │   ├── LoginController.java      # Controller de autenticação
+│   │   │   │   ├── MeusQuestionariosController.java
+│   │   │   │   ├── CriarQuestionarioController.java
+│   │   │   │   ├── EditarQuestionarioController.java
+│   │   │   │   ├── ResponderQuestionarioController.java
+│   │   │   │   ├── QuestionariosRespondidosController.java
+│   │   │   │   └── VisualizarResultadoController.java
+│   │   │   ├── model/                        # Camada de Model (Entidades)
+│   │   │   │   ├── Usuario.java              # Entidade de usuário
+│   │   │   │   ├── Questionario.java         # Entidade de questionário
+│   │   │   │   ├── Item.java                 # Classe abstrata para questões
+│   │   │   │   ├── QuestaoAlternativa.java   # Questão de múltipla escolha
+│   │   │   │   ├── QuestaoDissertativa.java  # Questão dissertativa
+│   │   │   │   ├── Alternativa.java          # Alternativa de questão
+│   │   │   │   ├── Resposta.java             # Classe abstrata para respostas
+│   │   │   │   ├── RespostaAlternativa.java  # Resposta de múltipla escolha
+│   │   │   │   ├── RespostaDissertativa.java # Resposta dissertativa
+│   │   │   │   ├── ResultadoQuestionario.java # Resultado final
+│   │   │   │   └── Imagens.java              # Entidade de imagens
+│   │   │   ├── repository/                   # Camada de Repository (DAO)
+│   │   │   │   ├── UsuarioDAO.java           # Acesso a dados de usuários
+│   │   │   │   ├── QuestionarioDAO.java      # Acesso a dados de questionários
+│   │   │   │   ├── ItemDAO.java              # Acesso a dados de itens/questões
+│   │   │   │   ├── AlternativaDAO.java       # Acesso a dados de alternativas
+│   │   │   │   ├── RespostaDAO.java          # Acesso a dados de respostas
+│   │   │   │   └── ResultadoDAO.java         # Acesso a dados de resultados
+│   │   │   └── service/                      # Camada de Service (Regras de negócio)
+│   │   │       ├── UsuarioService.java       # Lógica de negócio de usuários
+│   │   │       ├── QuestionarioService.java  # Lógica de negócio de questionários
+│   │   │       ├── ItemService.java          # Lógica de negócio de itens
+│   │   │       ├── RespostaService.java      # Lógica de negócio de respostas
+│   │   │       └── ResultadoService.java     # Lógica de negócio de resultados
 │   │   └── resources/
-│   │       ├── static/
+│   │       ├── application.yaml              # Configurações da aplicação
+│   │       ├── schema-postgresql.sql         # Schema do banco de dados
+│   │       ├── static/                       # Arquivos estáticos
 │   │       │   ├── css/
 │   │       │   │   └── style.css             # Estilos globais
 │   │       │   ├── img/                      # Imagens do projeto
 │   │       │   └── js/
 │   │       │       └── script.js             # Scripts JavaScript
-│   │       └── templates/
+│   │       └── templates/                    # Templates Thymeleaf
 │   │           ├── fragments/
 │   │           │   └── cabecalho.html        # Fragmento reutilizável do header
-│   │           ├── home.html                 # Página inicial
+│   │           ├── login.html                # Página de login
+│   │           ├── home.html                 # Página inicial (landing page)
 │   │           ├── meus-questionarios.html   # Página de questionários do usuário
-│   │           └── questionarios-respondidos.html
+│   │           ├── criar-questionario.html   # Página de criação
+│   │           ├── editar-questionario.html  # Página de edição
+│   │           ├── responder-questionario.html # Página para responder
+│   │           ├── questionarios-respondidos.html # Histórico de respostas
+│   │           └── visualizar-resultado.html # Visualização de resultados
 │   └── test/
-└── pom.xml
+│       └── java/br/com/caiogs06/poo/avaliacao/quiz/
+│           └── QuizApplicationTests.java     # Testes da aplicação
+└── target/                                    # Diretório de build (gerado)
 ```
 
 ## � Estrutura de Páginas
@@ -84,28 +135,110 @@ quiz/
   - 3 modais integrados (alterar foto, alterar nome, logout)
   - Estrutura otimizada para reutilização via `th:fragment`
 
+## 🏗️ Arquitetura do Projeto
+
+O projeto segue a arquitetura **MVC (Model-View-Controller)** em camadas:
+
+### **Controller** (Camada de Apresentação)
+Responsável por receber as requisições HTTP, processar e retornar as views apropriadas:
+- `BaseController.java` - Métodos comuns compartilhados entre controllers
+- `LoginController.java` - Autenticação de usuários
+- `HomeController.java` - Página inicial com listagem de questionários
+- `MeusQuestionariosController.java` - Gerenciamento de questionários do usuário
+- `CriarQuestionarioController.java` - Criação de novos questionários
+- `EditarQuestionarioController.java` - Edição de questionários existentes
+- `ResponderQuestionarioController.java` - Interface para responder questionários
+- `QuestionariosRespondidosController.java` - Histórico de questionários respondidos
+- `VisualizarResultadoController.java` - Visualização detalhada de resultados
+
+### **Service** (Camada de Negócio)
+Contém a lógica de negócio da aplicação:
+- `UsuarioService.java` - Validação e operações com usuários
+- `QuestionarioService.java` - Validação e operações com questionários
+- `ItemService.java` - Gerenciamento de questões (alternativas e dissertativas)
+- `RespostaService.java` - Processamento de respostas
+- `ResultadoService.java` - Cálculo e armazenamento de resultados
+
+### **Repository/DAO** (Camada de Persistência)
+Acesso e manipulação dos dados no banco PostgreSQL usando Spring Data JDBC:
+- `UsuarioDAO.java` - CRUD de usuários
+- `QuestionarioDAO.java` - CRUD de questionários
+- `ItemDAO.java` - CRUD de itens/questões
+- `AlternativaDAO.java` - CRUD de alternativas
+- `RespostaDAO.java` - CRUD de respostas
+- `ResultadoDAO.java` - CRUD de resultados
+
+### **Model** (Camada de Entidades)
+Classes que representam as entidades do domínio:
+- **Usuario** - Dados do usuário (nome, email, senha, foto)
+- **Questionario** - Informações do questionário (título, descrição, criador)
+- **Item** (abstrato) - Base para questões
+  - **QuestaoAlternativa** - Questão de múltipla escolha
+  - **QuestaoDissertativa** - Questão aberta/dissertativa
+- **Alternativa** - Opções de resposta para questões alternativas
+- **Resposta** (abstrato) - Base para respostas
+  - **RespostaAlternativa** - Resposta de múltipla escolha
+  - **RespostaDissertativa** - Resposta dissertativa
+- **ResultadoQuestionario** - Resultado final com nota e estatísticas
+- **Imagens** - Armazenamento de imagens associadas
+
 ## 🎯 Como Usar
 
 ### Pré-requisitos
 
-- Java JDK 17 ou superior
-- Maven 3.6+
+- Java JDK 21 ou superior
+- Maven 3.6+ (ou usar o wrapper `mvnw` incluído)
+- PostgreSQL 12+ (para executar localmente)
+- Docker (opcional, para executar via container)
 
-### Passos
+### Passos para Execução Local
 
 1. **Clone o repositório**
 ```bash
-git clone https://github.com/seu-usuario/quiz.git
-cd quiz
+git clone https://github.com/CaioGS06/quizisso.git
+cd quizisso
 ```
 
-2. **Execute o projeto**
+2. **Configure o banco de dados PostgreSQL**
+   
+Crie um banco de dados PostgreSQL e atualize as configurações em `src/main/resources/application.yaml`:
+
+```yaml
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/seu_banco
+    username: seu_usuario
+    password: sua_senha
+```
+
+3. **Execute o projeto**
 ```bash
 ./mvnw spring-boot:run
 ```
 Ou no Windows:
 ```cmd
 mvnw.cmd spring-boot:run
+```
+
+4. **Acesse no navegador**
+```
+http://localhost:8080
+```
+
+### Execução com Docker
+
+1. **Build da imagem Docker**
+```bash
+docker build -t quizisso:latest .
+```
+
+2. **Execute o container**
+```bash
+docker run -p 8080:8080 \
+  -e SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/seu_banco \
+  -e SPRING_DATASOURCE_USERNAME=seu_usuario \
+  -e SPRING_DATASOURCE_PASSWORD=sua_senha \
+  quizisso:latest
 ```
 
 3. **Acesse no navegador**
@@ -216,39 +349,56 @@ window.onclick = function (evento) {
 ## 📚 Conhecimentos Aplicados (Aula 3/11)
 
 - ✅ Configuração de projeto Spring Boot
-- ✅ Estrutura MVC (Model-View-Controller)
-- ✅ Roteamento com `@GetMapping`
+- ✅ Estrutura MVC (Model-View-Controller) em camadas
+- ✅ **Spring Data JDBC** para persistência de dados
+- ✅ **PostgreSQL** como banco de dados relacional
+- ✅ Roteamento com `@GetMapping` e `@PostMapping`
 - ✅ Utilização do Thymeleaf para templates
 - ✅ Passagem de dados do Controller para a View com `Model`
+- ✅ Injeção de dependências com `@Autowired`
+- ✅ Camada de Service para lógica de negócio
+- ✅ Camada Repository (DAO) para acesso a dados
+- ✅ Validação de dados com Spring Validation
 - ✅ Servir arquivos estáticos (CSS, JS, imagens)
 - ✅ Organização de recursos em `static/` e `templates/`
 - ✅ Navegação entre páginas
+- ✅ **Containerização com Docker**
 
 ## 🎯 Páginas Implementadas
 
-| Rota | Descrição | Template |
-|------|-----------|----------|
-| `/` | Landing page com todos os questionários | `home.html` |
-| `/meus-questionarios` | Questionários criados pelo usuário | `meus-questionarios.html` |
-| `/questionarios-respondidos` | Histórico de questionários respondidos | `questionarios-respondidos.html` |
-| `/alterar-foto` | Redirecionamento para alteração de foto | - |
-| `/alterar-nome` | Redirecionamento para alteração de nome | - |
-| `/logout` | Logout do sistema | - |
+| Rota | Descrição | Template | Controller |
+|------|-----------|----------|------------|
+| `/login` | Página de autenticação | `login.html` | `LoginController` |
+| `/` | Landing page com todos os questionários | `home.html` | `HomeController` |
+| `/meus-questionarios` | Questionários criados pelo usuário | `meus-questionarios.html` | `MeusQuestionariosController` |
+| `/criar-questionario` | Criação de novos questionários | `criar-questionario.html` | `CriarQuestionarioController` |
+| `/editar-questionario/{id}` | Edição de questionário existente | `editar-questionario.html` | `EditarQuestionarioController` |
+| `/responder-questionario/{id}` | Interface para responder questionário | `responder-questionario.html` | `ResponderQuestionarioController` |
+| `/questionarios-respondidos` | Histórico de questionários respondidos | `questionarios-respondidos.html` | `QuestionariosRespondidosController` |
+| `/visualizar-resultado/{id}` | Visualização detalhada de resultado | `visualizar-resultado.html` | `VisualizarResultadoController` |
+| `/alterar-foto` | Atualização de foto do usuário | - | `BaseController` |
+| `/alterar-nome` | Atualização de nome do usuário | - | `BaseController` |
+| `/logout` | Logout do sistema | - | `LoginController` |
 
 ## 🔧 Melhorias Futuras
 
-- [ ] Implementar autenticação de usuários
-- [ ] Criar sistema de banco de dados
-- [ ] Desenvolver funcionalidade de criação de questionários
-- [ ] Adicionar sistema de respostas e correção automática
-- [ ] Implementar upload de imagens para questionários
+- [ ] Sistema de tags/categorias para questionários
+- [ ] Filtros e busca avançada
+- [ ] Sistema de comentários e avaliações
+- [ ] Exportação de resultados (PDF/Excel)
+- [ ] Dashboard com estatísticas e gráficos
+- [ ] Sistema de notificações
+- [ ] Modo escuro (dark mode)
+- [ ] API RESTful para integração externa
+- [ ] Testes unitários e de integração completos
 
 ## 👨‍💻 Autor
 
 **Caio Greiffo Sampaio**
 - Curso: Programação Orientada a Objetos
-- Instituição: Faculdade de Tecnologia da Baixada Santista “Rubens Lara”
-- GitHub: [@caiogs06](https://github.com/caiogs06)
+- Instituição: Faculdade de Tecnologia da Baixada Santista "Rubens Lara"
+- GitHub: [@CaioGS06](https://github.com/CaioGS06)
+- Email: caiogreiffo@gmail.com
 
 ## 📄 Licença
 

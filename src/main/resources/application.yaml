@@ -1,14 +1,14 @@
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 spring:
   application:
     name: quiz
   
   datasource:
-    url: jdbc:postgresql://localhost:5432/quizisso?characterEncoding=UTF-8&useUnicode=true
-    username: postgres
-    password: s0f0d@o69420
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/quizisso?characterEncoding=UTF-8&useUnicode=true}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:s0f0d@o69420}
     driver-class-name: org.postgresql.Driver
     hikari:
       connection-init-sql: "SET NAMES 'UTF8'"
@@ -16,5 +16,5 @@ spring:
   sql:
     init:
       schema-locations: classpath:/schema-postgresql.sql
-      mode: always
+      mode: never
       platform: postgres
