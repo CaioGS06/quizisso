@@ -31,7 +31,11 @@
         </div>
 
         <!-- th:text substitui o conteúdo da tag pelo valor da expressão -->
-        <h3 class="titulo-questionario" th:text="${quiz.titulo}">Título do Quiz</h3>
+        <h3 class="titulo-questionario"
+          th:style="${quiz.descricao == null || quiz.descricao.isEmpty()} ? 'flex-grow: 1' : ''"
+          th:text="${quiz.titulo}">Título do Quiz</h3>
+        <p class="descricao-questionario" th:if="${quiz.descricao != null && !quiz.descricao.isEmpty()}"
+          th:text="${quiz.descricao}">Descrição do questionário</p>
 
         <div class="info-criador">
           <!-- 

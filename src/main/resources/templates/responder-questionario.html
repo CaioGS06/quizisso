@@ -18,6 +18,9 @@
         </button>
         <div class="info-questionario">
           <h1 th:text="${questionario.titulo}">Quiz</h1>
+          <p class="descricao-questionario-visualizacao"
+            th:if="${questionario.descricao != null && !questionario.descricao.isEmpty()}"
+            th:text="${questionario.descricao}">Descrição do questionário</p>
           <div class="info-criador-header">
             <img th:src="@{'/img/usuario' + ${questionario.criador.fotoId} + '.jpg'}"
               th:alt="${questionario.criador.nome}" class="foto-criador" alt="Foto do criador">

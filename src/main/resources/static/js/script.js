@@ -435,6 +435,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function coletarDadosQuestionario() {
   const titulo = document.querySelector('.campo-titulo-edicao').value.trim();
+  const descricao = document.querySelector('.campo-descricao-edicao').value.trim();
   const bannerPreview = document.getElementById('bannerPreview');
   const bannerIdMatch = bannerPreview.src.match(/banner(\d+)\.jpg/);
   const bannerId = bannerIdMatch ? parseInt(bannerIdMatch[1]) : 1;
@@ -475,6 +476,7 @@ function coletarDadosQuestionario() {
 
   return {
     titulo: titulo,
+    descricao: descricao,
     bannerId: bannerId,
     questoes: questoes
   };

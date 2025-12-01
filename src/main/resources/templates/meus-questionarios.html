@@ -27,7 +27,11 @@
             alt="Banner do questionário">
         </div>
         <h3 class="titulo-questionario" th:text="${quiz.titulo}"
-          th:onclick="'window.location.href=\'/editar-questionario?id=' + ${quiz.id} + '\''">Título do Quiz</h3>
+          th:style="${quiz.descricao == null || quiz.descricao.isEmpty()} ? 'flex-grow: 1' : ''"
+          th:onclick="'window.location.href=\\/editar-questionario?id=' + ${quiz.id} + '\\'">
+          Título do Quiz</h3>
+        <p class="descricao-questionario" th:if="${quiz.descricao != null && !quiz.descricao.isEmpty()}"
+          th:text="${quiz.descricao}">Descrição do questionário</p>
         <div class="acoes-questionario">
           <button class="botao-acao-questionario botao-editar"
             th:onclick="'window.location.href=\'/editar-questionario?id=' + ${quiz.id} + '\''">

@@ -151,6 +151,10 @@ public class VisualizarResultadoController extends BaseController {
       resposta.put("quantidadeErros", resultado.getQuantidadeErros());
       return ResponseEntity.ok(resposta);
 
+    } catch (NumberFormatException e) {
+      resposta.put("sucesso", false);
+      resposta.put("mensagem", "Erro ao salvar correção: " + e.getMessage());
+      return ResponseEntity.status(500).body(resposta);
     } catch (Exception e) {
       resposta.put("sucesso", false);
       resposta.put("mensagem", "Erro ao salvar correção: " + e.getMessage());

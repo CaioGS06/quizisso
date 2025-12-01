@@ -200,6 +200,8 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s, box-shadow 0.3s;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
 }
 
 .card-questionario:hover {
@@ -229,6 +231,20 @@ body {
   font-weight: 600;
   color: #2c3e50;
   text-align: center;
+  align-content: center;
+}
+
+.descricao-questionario {
+  padding: 0 20px 15px;
+  font-size: 14px;
+  color: #7f8c8d;
+  text-align: center;
+  line-height: 1.5;
+  margin: 0;
+  border-top: 1px solid #ecf0f1;
+  padding-top: 10px;
+  flex-grow: 1;
+  align-content: center;
 }
 
 /* Informações do Criador */
@@ -387,6 +403,17 @@ body {
 .info-criador-header .foto-criador {
   width: 35px;
   height: 35px;
+}
+
+.descricao-questionario-visualizacao {
+  font-size: 16px;
+  color: #7f8c8d;
+  margin: 10px 0 15px 0;
+  line-height: 1.6;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-left: 4px solid #3498db;
+  border-radius: 4px;
 }
 
 /* Card de Questão */
@@ -575,6 +602,24 @@ body {
 }
 
 .campo-titulo-edicao:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.campo-descricao-edicao {
+  width: 100%;
+  font-size: 16px;
+  color: #7f8c8d;
+  border: 2px solid #ecf0f1;
+  border-radius: 6px;
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  font-family: 'Cabin', sans-serif;
+  resize: vertical;
+  transition: border-color 0.3s;
+}
+
+.campo-descricao-edicao:focus {
   outline: none;
   border-color: #3498db;
 }
