@@ -19,7 +19,7 @@ public enum Imagens {
   BANNER_REDES(9, "banner9.jpg", "Banner Redes de Computadores", TipoImagem.BANNER),
   BANNER_SPRING(10, "banner10.jpg", "Banner Spring Framework", TipoImagem.BANNER);
 
-  private enum TipoImagem {
+  public enum TipoImagem {
     USUARIO,
     BANNER
   }

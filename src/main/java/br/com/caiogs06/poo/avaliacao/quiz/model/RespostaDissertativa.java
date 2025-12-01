@@ -1,15 +1,15 @@
 package br.com.caiogs06.poo.avaliacao.quiz.model;
 
 public class RespostaDissertativa extends Resposta {
-  private String textoResposta;
+  private final String textoResposta;
 
-  public RespostaDissertativa(Long itemId, String textoResposta) {
-    super(itemId);
+  public RespostaDissertativa(Long itemId, String textoResposta, Double pontuacaoObtida) {
+    super(itemId, pontuacaoObtida);
     this.textoResposta = textoResposta;
   }
 
-  public RespostaDissertativa(Long id, Long itemId, Long resultadoId, String textoResposta) {
-    super(id, itemId, resultadoId);
+  public RespostaDissertativa(Long id, Long itemId, Long resultadoId, String textoResposta, Double pontuacaoObtida) {
+    super(id, itemId, resultadoId, pontuacaoObtida);
     this.textoResposta = textoResposta;
   }
 

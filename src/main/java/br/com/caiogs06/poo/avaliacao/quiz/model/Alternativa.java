@@ -1,10 +1,10 @@
 package br.com.caiogs06.poo.avaliacao.quiz.model;
 
 public class Alternativa {
-  private Long id;
-  private String descricao;
-  private boolean estaCorreta;
-  private int ordem;
+  private final Long id;
+  private final String descricao;
+  private final boolean estaCorreta;
+  private final int ordem;
 
   public Alternativa(Long id, String descricao, boolean correta, int ordem) {
     this.id = id;

@@ -1,6 +1,7 @@
 package br.com.caiogs06.poo.avaliacao.quiz.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,12 @@ public class ResultadoService {
 
   public List<ResultadoQuestionario> listarPorRespondente(Long respondenteId) {
     List<ResultadoQuestionario> resultados = resultadoDAO.listarPorRespondente(respondenteId);
+    resultados.forEach(this::carregarDadosCompletos);
+    return resultados;
+  }
+
+  public List<ResultadoQuestionario> listarPorQuestionario(Long questionarioId) {
+    List<ResultadoQuestionario> resultados = resultadoDAO.listarPorQuestionario(questionarioId);
     resultados.forEach(this::carregarDadosCompletos);
     return resultados;
   }
@@ -101,13 +108,51 @@ public class ResultadoService {
   public void deletarPorQuestionario(Long questionarioId) {
     // Primeiro buscar todos os IDs de resultados para deletar as respostas
     List<Long> resultadoIds = resultadoDAO.listarIdsPorQuestionario(questionarioId);
-    
+
     // Deletar todas as respostas de cada resultado
     for (Long resultadoId : resultadoIds) {
       respostaService.deletarPorResultado(resultadoId);
     }
-    
+
     // Depois deletar os resultados
     resultadoDAO.deletarPorQuestionario(questionarioId);
+  }
+
+  @Transactional
+  public void deletar(Long id) {
+    // Deletar todas as respostas associadas ao resultado
+    respostaService.deletarPorResultado(id);
+
+    // Deletar o resultado
+    resultadoDAO.deletar(id);
+  }
+
+  @Transactional
+  public void atualizarPontuacoes(Long resultadoId, Map<String, Object> pontuacoes) {
+    ResultadoQuestionario resultado = buscarPorId(resultadoId);
+    if (resultado == null) {
+      throw new IllegalArgumentException("Resultado não encontrado");
+    }
+
+    // Atualizar pontuações de cada resposta
+    for (Map.Entry<String, Object> entry : pontuacoes.entrySet()) {
+      Long itemId = Long.valueOf(entry.getKey());
+      Double novaPontuacao = Double.valueOf(entry.getValue().toString());
+
+      // Buscar a resposta correspondente ao item
+      Resposta resposta = resultado.buscarRespostaPorItemId(itemId);
+      if (resposta != null) {
+        respostaService.atualizarPontuacaoItem(resposta.getId(), novaPontuacao);
+      }
+    }
+
+    // Recarregar resultado com pontuações atualizadas
+    resultado = buscarPorId(resultadoId);
+
+    // Recalcular nota final
+    resultado.calcularNotaFinal();
+
+    // Atualizar nota final no banco
+    resultadoDAO.atualizarNotaFinal(resultadoId, resultado.getNotaFinal());
   }
 }

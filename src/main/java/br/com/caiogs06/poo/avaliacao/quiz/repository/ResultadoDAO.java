@@ -24,16 +24,21 @@ public class ResultadoDAO {
     Double notaFinal = notaFinalBd != null ? notaFinalBd.doubleValue() : null;
 
     return new ResultadoQuestionario(
-      rs.getLong("id"),
-      rs.getLong("questionario_id"),
-      rs.getLong("respondente_id"),
-      notaFinal,
-      rs.getObject("data_submissao", LocalDateTime.class));
+        rs.getLong("id"),
+        rs.getLong("questionario_id"),
+        rs.getLong("respondente_id"),
+        notaFinal,
+        rs.getObject("data_submissao", LocalDateTime.class));
   };
 
   public List<ResultadoQuestionario> listarPorRespondente(Long respondenteId) {
     String sql = "SELECT id, questionario_id, respondente_id, nota_final, data_submissao FROM resultado_questionario WHERE respondente_id = ? ORDER BY data_submissao DESC";
     return jdbc.query(sql, rowMapper, respondenteId);
+  }
+
+  public List<ResultadoQuestionario> listarPorQuestionario(Long questionarioId) {
+    String sql = "SELECT id, questionario_id, respondente_id, nota_final, data_submissao FROM resultado_questionario WHERE questionario_id = ? ORDER BY data_submissao DESC";
+    return jdbc.query(sql, rowMapper, questionarioId);
   }
 
   public ResultadoQuestionario buscarPorId(Long id) {
@@ -58,6 +63,10 @@ public class ResultadoDAO {
 
   public void deletar(Long id) {
     jdbc.update("DELETE FROM resultado_questionario WHERE id = ?", id);
+  }
+
+  public void atualizarNotaFinal(Long id, Double notaFinal) {
+    jdbc.update("UPDATE resultado_questionario SET nota_final = ? WHERE id = ?", notaFinal, id);
   }
 
   public List<Long> listarIdsPorQuestionario(Long questionarioId) {

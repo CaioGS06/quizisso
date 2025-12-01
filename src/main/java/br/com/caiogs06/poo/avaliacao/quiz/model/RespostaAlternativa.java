@@ -1,15 +1,15 @@
 package br.com.caiogs06.poo.avaliacao.quiz.model;
 
 public class RespostaAlternativa extends Resposta {
-  private Long alternativaId;
+  private final Long alternativaId;
 
-  public RespostaAlternativa(Long itemId, Long alternativaId) {
-    super(itemId);
+  public RespostaAlternativa(Long itemId, Long alternativaId, Double pontuacaoObtida) {
+    super(itemId, pontuacaoObtida);
     this.alternativaId = alternativaId;
   }
 
-  public RespostaAlternativa(Long id, Long itemId, Long resultadoId, Long alternativaId) {
-    super(id, itemId, resultadoId);
+  public RespostaAlternativa(Long id, Long itemId, Long resultadoId, Long alternativaId, Double pontuacaoObtida) {
+    super(id, itemId, resultadoId, pontuacaoObtida);
     this.alternativaId = alternativaId;
   }
 

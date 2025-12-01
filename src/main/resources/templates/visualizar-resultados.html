@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <title>Quizisso - Resultados do Questionário</title>
+  <th:block th:replace="~{fragments/cabecalho :: head}"></th:block>
+</head>
+
+<body>
+  <th:block th:replace="~{fragments/cabecalho :: cabecalho}"></th:block>
+
+  <main class="conteudo-principal">
+    <div class="container-questionario">
+      <div class="header-questionario">
+        <button class="botao-voltar" onclick="window.location.href='/meus-questionarios'">
+          <i class="ti ti-arrow-left"></i>
+          Voltar
+        </button>
+        <div class="info-questionario">
+          <h1 th:text="${questionario.titulo}">Título do Questionário</h1>
+          <div class="info-criador-header">
+            <img class="foto-criador" th:src="@{'/img/usuario' + ${questionario.criador.fotoId} + '.jpg'}"
+              th:alt="${questionario.criador.nome}" alt="Foto do criador">
+            <span class="nome-criador" th:text="${questionario.criador.nome}">Nome do Criador</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="cabecalho-secao">
+        <h2>Resultados dos Alunos</h2>
+        <span class="contador-resultados" th:text="${#lists.size(resultados)} + ' resultado(s)'">0 resultados</span>
+      </div>
+
+      <div class="lista-resultados">
+        <!-- Loop através dos resultados -->
+        <div class="card-resultado" th:each="resultado : ${resultados}"
+          th:onclick="'window.location.href=\'/visualizar-resultado?id=' + ${resultado.id} + '&correcao=true\''">
+          <div class="resultado-info-principal">
+            <div class="usuario-info">
+              <img class="foto-usuario-resultado" th:src="@{'/img/usuario' + ${resultado.respondente.fotoId} + '.jpg'}"
+                th:alt="${resultado.respondente.nome}" alt="Foto do usuário">
+              <div class="usuario-detalhes">
+                <span class="nome-usuario-resultado" th:text="${resultado.respondente.nome}">Nome do Usuário</span>
+                <span class="email-usuario-resultado" th:text="${resultado.respondente.email}">email@exemplo.com</span>
+              </div>
+            </div>
+            <div class="resultado-metricas">
+              <div class="metrica">
+                <i class="ti ti-checklist"></i>
+                <span th:text="${resultado.quantidadeQuestoes} + ' questões'">10 questões</span>
+              </div>
+              <div class="metrica">
+                <i class="ti ti-circle-check"></i>
+                <span th:text="${resultado.quantidadeAcertos} + ' acertos'">8 acertos</span>
+              </div>
+              <div class="metrica nota-destaque">
+                <i class="ti ti-star-filled"></i>
+                <span th:text="${#numbers.formatDecimal(resultado.notaFinal, 1, 2)} + ' pts'">8.5 pts</span>
+              </div>
+            </div>
+          </div>
+          <div class="resultado-rodape">
+            <span class="data-submissao">
+              <i class="ti ti-calendar"></i>
+              Respondido em: <span
+                th:text="${#temporals.format(resultado.dataSubmissao, 'dd/MM/yyyy HH:mm')}">01/12/2025 14:30</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Mensagem quando não houver resultados -->
+        <div th:if="${#lists.isEmpty(resultados)}" class="mensagem-vazia">
+          <i class="ti ti-files-off"></i>
+          <p>Ainda não há resultados para este questionário.</p>
+          <p>Compartilhe o link com seus alunos para que eles possam responder!</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <th:block th:replace="~{fragments/cabecalho :: scripts}"></th:block>
+</body>
+
+</html>

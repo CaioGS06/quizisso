@@ -25,7 +25,7 @@ function fecharModalExcluirQuestionario() {
 function confirmarExclusaoQuestionario() {
   const urlParams = new URLSearchParams(window.location.search);
   const questionarioId = urlParams.get('id');
-  
+
   if (!questionarioId) {
     alert('ID do questionário não encontrado!');
     return;
@@ -37,18 +37,18 @@ function confirmarExclusaoQuestionario() {
       'Content-Type': 'application/json',
     }
   })
-  .then(response => response.json())
-  .then(data => {
-    if (data.sucesso) {
-      alert(data.mensagem || 'Questionário excluído com sucesso!');
-      window.location.href = '/meus-questionarios';
-    } else {
-      alert(data.erro || 'Erro ao excluir questionário');
-    }
-  })
-  .catch(error => {
-    alert('Erro ao excluir questionário: ' + error.message);
-  });
+    .then(response => response.json())
+    .then(data => {
+      if (data.sucesso) {
+        alert(data.mensagem || 'Questionário excluído com sucesso!');
+        window.location.href = '/meus-questionarios';
+      } else {
+        alert(data.erro || 'Erro ao excluir questionário');
+      }
+    })
+    .catch(error => {
+      alert('Erro ao excluir questionário: ' + error.message);
+    });
 }
 
 function abrirModalExcluirResultado() {
@@ -60,9 +60,34 @@ function fecharModalExcluirResultado() {
 }
 
 function confirmarExclusaoResultado() {
-  // Lógica de exclusão aqui
-  alert('Resultado excluído!');
-  window.location.href = '/questionarios-respondidos';
+  const urlParams = new URLSearchParams(window.location.search);
+  const resultadoId = urlParams.get('id');
+
+  if (!resultadoId) {
+    alert('Erro: ID do resultado não encontrado');
+    return;
+  }
+
+  fetch(`/excluir-resultado?id=${resultadoId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.sucesso) {
+        alert('Resultado excluído com sucesso!');
+        window.location.href = '/questionarios-respondidos';
+      } else {
+        alert('Erro ao excluir resultado: ' + data.mensagem);
+        fecharModalExcluirResultado();
+      }
+    })
+    .catch(error => {
+      alert('Erro ao excluir resultado: ' + error.message);
+      fecharModalExcluirResultado();
+    });
 }
 
 // Modais de Usuário
@@ -107,7 +132,7 @@ function abrirModalSelecionarBanner() {
   const bannerAtual = document.getElementById('bannerPreview').src;
   const bannerIdMatch = bannerAtual.match(/banner(\d+)\.jpg/);
   bannerSelecionadoTemp = bannerIdMatch ? bannerIdMatch[1] : '1';
-  
+
   // Marcar o banner atual
   const radios = document.querySelectorAll('input[name="bannerId"]');
   radios.forEach(radio => {
@@ -115,7 +140,7 @@ function abrirModalSelecionarBanner() {
       radio.checked = true;
     }
   });
-  
+
   document.getElementById('modalSelecionarBanner').classList.add('ativo');
 }
 
@@ -140,6 +165,7 @@ function removerQuestao(botao) {
   if (confirm('Tem certeza que deseja remover esta questão?')) {
     botao.closest('.questao-card').remove();
     atualizarNumerosQuestoes();
+    atualizarPontuacaoTotal();
   }
 }
 
@@ -158,6 +184,24 @@ function atualizarNumerosQuestoes() {
   });
 }
 
+function atualizarPontuacaoTotal() {
+  const questoes = document.querySelectorAll('.questao-card');
+  let total = 0;
+
+  questoes.forEach(questao => {
+    const campoPontuacao = questao.querySelector('.campo-pontuacao');
+    if (campoPontuacao) {
+      const pontuacao = parseFloat(campoPontuacao.value) || 0;
+      total += pontuacao;
+    }
+  });
+
+  const pontuacaoTotalElement = document.getElementById('pontuacaoTotal');
+  if (pontuacaoTotalElement) {
+    pontuacaoTotalElement.textContent = total.toFixed(1);
+  }
+}
+
 function removerAlternativa(botao) {
   const alternativasContainer = botao.closest('.alternativas-edicao');
   const alternativas = alternativasContainer.querySelectorAll('.alternativa-edicao');
@@ -173,7 +217,7 @@ function adicionarAlternativa(botao) {
   const questaoCard = botao.closest('.questao-card');
   const alternativasContainer = questaoCard.querySelector('.alternativas-edicao');
   const questaoNumero = Array.from(document.querySelectorAll('.questao-card')).indexOf(questaoCard) + 1;
-  
+
   const novaAlternativa = document.createElement('div');
   novaAlternativa.className = 'alternativa-edicao';
   novaAlternativa.innerHTML = `
@@ -183,7 +227,7 @@ function adicionarAlternativa(botao) {
       <i class="ti ti-x"></i>
     </button>
   `;
-  
+
   // Inserir antes do botão "Adicionar Alternativa"
   botao.parentElement.insertBefore(novaAlternativa, botao);
 }
@@ -192,29 +236,29 @@ function trocarTipoQuestao(selectElement) {
   const questaoCard = selectElement.closest('.questao-card');
   const tipoAtual = questaoCard.querySelector('.alternativas-edicao, .campo-gabarito');
   const novoTipo = selectElement.value;
-  
+
   // Se já existe conteúdo e está trocando o tipo
   if (tipoAtual) {
-    const temConteudo = tipoAtual.classList.contains('alternativas-edicao') 
+    const temConteudo = tipoAtual.classList.contains('alternativas-edicao')
       ? tipoAtual.querySelectorAll('.campo-alternativa').length > 0
       : tipoAtual.value.trim() !== '';
-    
+
     if (temConteudo && !confirm('Trocar o tipo da questão apagará os dados já preenchidos. Deseja continuar?')) {
       // Reverter seleção
       selectElement.value = tipoAtual.classList.contains('alternativas-edicao') ? 'alternativa' : 'dissertativa';
       return;
     }
   }
-  
+
   // Remover conteúdo atual
   const alternativasDiv = questaoCard.querySelector('.alternativas-edicao');
   const gabaritoTextarea = questaoCard.querySelector('.campo-gabarito');
   if (alternativasDiv) alternativasDiv.remove();
   if (gabaritoTextarea) gabaritoTextarea.remove();
-  
+
   const enunciadoInput = questaoCard.querySelector('.campo-enunciado');
   const questaoNumero = Array.from(document.querySelectorAll('.questao-card')).indexOf(questaoCard) + 1;
-  
+
   if (novoTipo === 'alternativa') {
     // Criar alternativas
     const alternativasDiv = document.createElement('div');
@@ -255,19 +299,26 @@ function adicionarQuestao() {
   const acoesFormulario = formulario.querySelector('.acoes-formulario');
   const questoes = document.querySelectorAll('.questao-card');
   const novoNumero = questoes.length + 1;
-  
+
   const novaQuestao = document.createElement('div');
   novaQuestao.className = 'questao-card edicao';
   novaQuestao.innerHTML = `
     <div class="questao-header">
       <span class="questao-numero">Questão ${novoNumero}</span>
-      <select class="select-tipo-questao" onchange="trocarTipoQuestao(this)">
-        <option value="alternativa" selected>Alternativa</option>
-        <option value="dissertativa">Dissertativa</option>
-      </select>
-      <button type="button" class="botao-remover-questao" onclick="removerQuestao(this)">
-        <i class="ti ti-x"></i>
-      </button>
+      <div class="questao-controles">
+        <div class="campo-pontuacao-container">
+          <label>Pontuação:</label>
+          <input type="number" class="campo-pontuacao" min="0" step="0.5" value="1.0" onchange="atualizarPontuacaoTotal()">
+          <span>pts</span>
+        </div>
+        <select class="select-tipo-questao" onchange="trocarTipoQuestao(this)">
+          <option value="alternativa" selected>Alternativa</option>
+          <option value="dissertativa">Dissertativa</option>
+        </select>
+        <button type="button" class="botao-remover-questao" onclick="removerQuestao(this)">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
     </div>
     <input type="text" class="campo-enunciado" placeholder="Digite o enunciado...">
     <div class="alternativas-edicao">
@@ -291,8 +342,9 @@ function adicionarQuestao() {
       </button>
     </div>
   `;
-  
+
   acoesFormulario.before(novaQuestao);
+  atualizarPontuacaoTotal();
 }
 
 // Validação e submissão do formulário de questionário
@@ -300,6 +352,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const formularioQuestionario = document.querySelector('.formulario-questionario');
 
   if (formularioQuestionario) {
+    // Calcular pontuação total inicial
+    atualizarPontuacaoTotal();
     // Validação apenas para páginas de criação/edição (que têm campo de título)
     const titulo = document.querySelector('.campo-titulo-edicao');
     if (titulo) {
@@ -384,19 +438,21 @@ function coletarDadosQuestionario() {
   const bannerPreview = document.getElementById('bannerPreview');
   const bannerIdMatch = bannerPreview.src.match(/banner(\d+)\.jpg/);
   const bannerId = bannerIdMatch ? parseInt(bannerIdMatch[1]) : 1;
-  
+
   const questoes = [];
-  
+
   document.querySelectorAll('.questao-card').forEach((questaoCard, index) => {
     const enunciado = questaoCard.querySelector('.campo-enunciado').value.trim();
     const tipo = questaoCard.querySelector('.select-tipo-questao').value;
-    
+    const pontuacaoMaxima = parseFloat(questaoCard.querySelector('.campo-pontuacao').value) || 1.0;
+
     const questao = {
       ordem: index + 1,
       enunciado: enunciado,
-      tipo: tipo
+      tipo: tipo,
+      pontuacaoMaxima: pontuacaoMaxima
     };
-    
+
     if (tipo === 'alternativa') {
       const alternativas = [];
       const alternativasDivs = questaoCard.querySelectorAll('.alternativa-edicao');
@@ -413,10 +469,10 @@ function coletarDadosQuestionario() {
     } else {
       questao.gabarito = questaoCard.querySelector('.campo-gabarito').value.trim();
     }
-    
+
     questoes.push(questao);
   });
-  
+
   return {
     titulo: titulo,
     bannerId: bannerId,
@@ -425,17 +481,18 @@ function coletarDadosQuestionario() {
 }
 
 function enviarQuestionario(dados) {
-  // Determinar se é criação ou edição baseado na URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const questionarioId = urlParams.get('id');
-  
-  const url = questionarioId ? '/editar-questionario' : '/criar-questionario';
+  // Determinar se é criação ou edição baseado no atributo data-modo do formulário
+  const form = document.querySelector('.formulario-questionario');
+  const modo = form.dataset.modo; // 'criar' ou 'editar'
+  const questionarioId = form.dataset.questionarioId;
+
+  const url = modo === 'editar' ? '/editar-questionario' : '/criar-questionario';
   const method = 'POST';
-  
-  if (questionarioId) {
-    dados.id = parseInt(questionarioId); // Converter para número
+
+  if (modo === 'editar' && questionarioId) {
+    dados.id = parseInt(questionarioId);
   }
-  
+
   fetch(url, {
     method: method,
     headers: {
@@ -443,28 +500,137 @@ function enviarQuestionario(dados) {
     },
     body: JSON.stringify(dados)
   })
-  .then(response => {
-    if (!response.ok) {
-      return response.json().then(err => Promise.reject(err));
-    }
-    return response.json();
-  })
-  .then(data => {
-    if (data.requerConfirmacao) {
-      // Questionário possui resultados, solicitar confirmação
-      if (confirm(data.mensagem)) {
-        // Usuário confirmou, enviar novamente com flag de confirmação
-        dados.confirmarExclusao = true;
-        enviarQuestionario(dados);
+    .then(response => {
+      if (!response.ok) {
+        return response.json().then(err => Promise.reject(err));
       }
-    } else if (data.sucesso) {
-      alert(data.mensagem || 'Questionário salvo com sucesso!');
-      window.location.href = '/meus-questionarios';
-    } else {
-      alert(data.erro || 'Erro ao salvar questionário');
-    }
-  })
-  .catch(error => {
-    alert('Erro ao salvar questionário: ' + (error.erro || error.message));
+      return response.json();
+    })
+    .then(data => {
+      if (data.requerConfirmacao) {
+        // Questionário possui resultados, solicitar confirmação
+        if (confirm(data.mensagem)) {
+          // Usuário confirmou, enviar novamente com flag de confirmação
+          dados.confirmarExclusao = true;
+          enviarQuestionario(dados);
+        }
+      } else if (data.sucesso) {
+        alert(data.mensagem || 'Questionário salvo com sucesso!');
+        window.location.href = '/meus-questionarios';
+      } else {
+        alert(data.erro || 'Erro ao salvar questionário');
+      }
+    })
+    .catch(error => {
+      alert('Erro ao salvar questionário: ' + (error.erro || error.message));
+    });
+}
+
+// Funções de Correção de Resultados
+function atualizarNotaFinal() {
+  const campos = document.querySelectorAll('.campo-pontuacao-correcao');
+  let notaTotal = 0;
+
+  campos.forEach(campo => {
+    const valor = parseFloat(campo.value) || 0;
+    notaTotal += valor;
   });
+
+  // Buscar pontuação máxima total
+  let pontuacaoMaxima = 0;
+  campos.forEach(campo => {
+    const max = parseFloat(campo.getAttribute('data-pontuacao-maxima')) || 0;
+    pontuacaoMaxima += max;
+  });
+
+  // Atualizar display da nota
+  const display = document.getElementById('notaFinalDisplay');
+  if (display) {
+    display.textContent = notaTotal.toFixed(1) + '/' + pontuacaoMaxima.toFixed(1);
+  }
+}
+
+function salvarCorrecao() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const resultadoId = urlParams.get('id');
+
+  if (!resultadoId) {
+    alert('Erro: ID do resultado não encontrado');
+    return;
+  }
+
+  // Coletar todas as pontuações alteradas
+  const pontuacoes = {};
+  const campos = document.querySelectorAll('.campo-pontuacao-correcao');
+  let validacaoOk = true;
+
+  campos.forEach(campo => {
+    const itemId = campo.getAttribute('data-item-id');
+    const pontuacao = parseFloat(campo.value) || 0;
+    const pontuacaoMaxima = parseFloat(campo.getAttribute('data-pontuacao-maxima')) || 0;
+
+    // Validar que a pontuação não excede o máximo
+    if (pontuacao > pontuacaoMaxima) {
+      alert(`A pontuação para a questão não pode exceder ${pontuacaoMaxima} pontos`);
+      validacaoOk = false;
+      return;
+    }
+
+    pontuacoes[itemId] = pontuacao;
+  });
+
+  // Verificar se a validação passou
+  if (!validacaoOk) {
+    return;
+  }
+
+  // Enviar para o servidor
+  fetch('/salvar-correcao', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      resultadoId: resultadoId,
+      pontuacoes: pontuacoes
+    })
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.sucesso) {
+        alert(data.mensagem || 'Correção salva com sucesso!');
+        // Atualizar estatísticas antes de redirecionar
+        if (data.quantidadeAcertos !== undefined && data.quantidadeErros !== undefined) {
+          // Atualizar os números no resumo
+          const acertosElement = document.querySelector('.resumo-resultado .estatistica:nth-child(1) strong');
+          const errosElement = document.querySelector('.resumo-resultado .estatistica:nth-child(2) strong');
+
+          if (acertosElement) acertosElement.textContent = data.quantidadeAcertos;
+          if (errosElement) errosElement.textContent = data.quantidadeErros;
+
+          // Aguardar um momento para o usuário ver a atualização
+          setTimeout(() => {
+            const questionarioId = data.questionarioId;
+            if (questionarioId) {
+              window.location.href = '/visualizar-resultados?id=' + questionarioId;
+            } else {
+              location.reload();
+            }
+          }, 800);
+        } else {
+          // Redirecionar imediatamente se não houver dados de estatísticas
+          const questionarioId = data.questionarioId;
+          if (questionarioId) {
+            window.location.href = '/visualizar-resultados?id=' + questionarioId;
+          } else {
+            location.reload();
+          }
+        }
+      } else {
+        alert(data.mensagem || 'Erro ao salvar correção');
+      }
+    })
+    .catch(error => {
+      alert('Erro ao salvar correção: ' + error.message);
+    });
 }

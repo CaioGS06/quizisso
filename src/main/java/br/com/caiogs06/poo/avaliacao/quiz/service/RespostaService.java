@@ -38,6 +38,11 @@ public class RespostaService {
   }
 
   @Transactional
+  public void atualizarPontuacaoItem(Long respostaId, Double novaPontuacao) {
+    respostaDAO.atualizarPontuacao(respostaId, novaPontuacao);
+  }
+
+  @Transactional
   public void deletar(Long id) {
     respostaDAO.deletar(id);
   }

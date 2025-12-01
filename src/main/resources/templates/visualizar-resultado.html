@@ -12,28 +12,44 @@
   <main class="conteudo-principal">
     <div class="container-questionario">
       <div class="header-questionario">
-        <button class="botao-voltar" onclick="window.location.href='/questionarios-respondidos'">
+        <button class="botao-voltar" th:if="${modoCorrecao}"
+          th:onclick="|window.location.href='/visualizar-resultados?id=${resultado.questionario.id}'|">
+          <i class="ti ti-arrow-left"></i>
+          Voltar
+        </button>
+        <button class="botao-voltar" th:unless="${modoCorrecao}"
+          onclick="window.location.href='/questionarios-respondidos'">
           <i class="ti ti-arrow-left"></i>
           Voltar
         </button>
         <div class="info-questionario">
           <h1 th:text="${resultado.questionario.titulo}">Quiz de Programação</h1>
           <div class="info-resultado-header">
-            <div class="info-criador-header">
+            <div class="info-criador-header" th:if="${!modoCorrecao}">
               <img th:src="@{'/img/usuario' + ${resultado.questionario.criador.fotoId} + '.jpg'}"
                 th:alt="${resultado.questionario.criador.nome}" class="foto-criador" alt="Foto do criador">
               <span>Criado por <strong th:text="${resultado.questionario.criador.nome}">Criador</strong></span>
             </div>
+            <div class="info-criador-header" th:if="${modoCorrecao}">
+              <img th:src="@{'/img/usuario' + ${resultado.respondente.fotoId} + '.jpg'}"
+                th:alt="${resultado.respondente.nome}" class="foto-criador" alt="Foto do respondente">
+              <span>Respondido por <strong th:text="${resultado.respondente.nome}">Respondente</strong></span>
+            </div>
             <div class="nota-resultado">
-              <i class="ti ti-circle-check"></i>
-              <span>Nota Final: <strong
+              <span>Nota Final: <strong id="notaFinalDisplay"
                   th:text="${#numbers.formatDecimal(resultado.notaFinal, 1, 1)} + '/' + ${#numbers.formatDecimal(resultado.questionario.obterPontuacaoMaxima(), 1, 1)}">0.0/10</strong></span>
             </div>
           </div>
-          <button class="botao-excluir-resultado" onclick="abrirModalExcluirResultado()">
-            <i class="ti ti-trash"></i>
-            Excluir Resultado
-          </button>
+          <div class="acoes-resultado">
+            <button class="botao-excluir-resultado" onclick="abrirModalExcluirResultado()">
+              <i class="ti ti-trash"></i>
+              Excluir Resultado
+            </button>
+            <button class="botao-salvar-correcao" th:if="${modoCorrecao}" onclick="salvarCorrecao()">
+              <i class="ti ti-device-floppy"></i>
+              Salvar Correção
+            </button>
+          </div>
         </div>
       </div>
 
@@ -41,8 +57,8 @@
         <!-- Loop através dos itens do questionário -->
         <div class="questao-card resultado" th:each="item, iterStat : ${resultado.questionario.listaItens}"
           th:with="resposta=${resultado.buscarRespostaPorItemId(item.id)},
-                   estaCorreta=${item.tipo == 'ALTERNATIVA' ? (resposta != null && item.respostaEstaCorreta(resposta)) : null}"
-          th:classappend="${estaCorreta != null ? (estaCorreta ? 'correta' : 'incorreta') : ''}">
+                   estaCorreta=${item.tipo == 'ALTERNATIVA' ? (resposta != null && item.respostaEstaCorreta(resposta)) : null}" th:classappend="${estaCorreta != null ? (estaCorreta ? 'correta' : 'incorreta') : ''}"
+          th:attr="data-item-id=${item.id}">
           <div class="questao-header">
             <span class="questao-numero" th:text="'Questão ' + ${iterStat.count}">Questão 1</span>
             <span class="questao-tipo"
@@ -55,15 +71,29 @@
               <i class="ti ti-x"></i>
               Incorreta
             </span>
+            <!-- Campo de pontuação editável em modo correção -->
+            <div class="campo-pontuacao-container" th:if="${modoCorrecao}">
+              <label>Pontos:</label>
+              <input type="number" class="campo-pontuacao-correcao"
+                th:attr="data-item-id=${item.id}, data-pontuacao-maxima=${item.pontuacaoMaxima}"
+                th:value="${resposta != null ? resposta.pontuacaoObtida : 0}" min="0" th:max="${item.pontuacaoMaxima}"
+                step="0.1" onchange="atualizarNotaFinal()">
+              <span th:text="'/' + ${item.pontuacaoMaxima}">/ 10</span>
+            </div>
+            <div class="pontuacao-item" th:unless="${modoCorrecao}">
+              <span th:if="${resposta != null}"
+                th:text="'Pontos: ' + ${#numbers.formatDecimal(resposta.pontuacaoObtida, 1, 1)} + '/' + ${#numbers.formatDecimal(item.pontuacaoMaxima, 1, 1)}">Pontos:
+                0/10</span>
+              <span th:unless="${resposta != null}"
+                th:text="'Pontos: 0/' + ${#numbers.formatDecimal(item.pontuacaoMaxima, 1, 1)}">Pontos: 0/10</span>
+            </div>
           </div>
           <h3 class="questao-enunciado" th:text="${item.enunciado}">Enunciado</h3>
 
           <!-- Alternativas (apenas para ItemAlternativa) -->
           <div class="alternativas" th:if="${item.getTipo() == 'ALTERNATIVA'}">
-            <div th:each="alternativa, altIterStat : ${item.alternativas}" class="alternativa"
-              th:with="estaSelecionada=${resposta != null && resposta.alternativaId == alternativa.id},
-                       estaCorreta=${alternativa.estaCorreta}"
-              th:classappend="${estaSelecionada 
+            <div th:each="alternativa, altIterStat : ${item.alternativas}" class="alternativa" th:with="estaSelecionada=${resposta != null && resposta.alternativaId == alternativa.id},
+                       estaCorreta=${alternativa.estaCorreta}" th:classappend="${estaSelecionada 
                 ? 'selecionada' 
                 : ''} 
               + ' ' + ${estaCorreta  
@@ -73,12 +103,9 @@
                 : (estaSelecionada
                   ? 'incorreta' 
                   : '')}">
-              <i class="ti ti-circle-check"
-                th:if="${estaSelecionada && estaCorreta}"></i>
-              <i class="ti ti-circle-x"
-                th:if="${estaSelecionada && !estaCorreta}"></i>
-              <i class="ti ti-check"
-                th:if="${!estaSelecionada && estaCorreta}"></i>
+              <i class="ti ti-circle-check" th:if="${estaSelecionada && estaCorreta}"></i>
+              <i class="ti ti-circle-x" th:if="${estaSelecionada && !estaCorreta}"></i>
+              <i class="ti ti-check" th:if="${!estaSelecionada && estaCorreta}"></i>
               <span th:text="${alternativa.descricao}">Alternativa</span>
             </div>
           </div>
@@ -86,7 +113,7 @@
           <!-- Resposta Dissertativa -->
           <div th:if="${item.getTipo() == 'DISSERTATIVA'}">
             <div class="resposta-dissertativa">
-              <h4>Sua resposta:</h4>
+              <h4>Resposta do aluno:</h4>
               <p th:text="${resposta != null ? resposta.textoResposta : 'Sem resposta'}">Texto da resposta</p>
             </div>
             <div class="gabarito-dissertativa">

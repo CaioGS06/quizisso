@@ -9,7 +9,7 @@ public class ResultadoQuestionario {
   private Questionario questionario;
   private Usuario respondente;
   private Double notaFinal;
-  private LocalDateTime dataSubmissao;
+  private final LocalDateTime dataSubmissao;
   private List<Resposta> respostas = new ArrayList<>();
 
   public ResultadoQuestionario(Questionario questionario, Usuario respondente) {
@@ -55,7 +55,7 @@ public class ResultadoQuestionario {
     for (Resposta resp : respostas) {
       Item<? extends Resposta> item = buscarItemPorId(resp.getItemId());
       if (item != null && item instanceof QuestaoAlternativa && resp instanceof RespostaAlternativa &&
-            ((QuestaoAlternativa) item).respostaEstaCorreta((RespostaAlternativa) resp)) {
+          ((QuestaoAlternativa) item).respostaEstaCorreta((RespostaAlternativa) resp)) {
         corretas++;
       } else if (item != null && item instanceof QuestaoDissertativa && resp instanceof RespostaDissertativa &&
           ((QuestaoDissertativa) item).respostaEstaCorreta((RespostaDissertativa) resp)) {
@@ -75,17 +75,11 @@ public class ResultadoQuestionario {
     if (questionario == null)
       return;
 
-    // Polimorfismo: o item sabe calcular a nota baseado na resposta
+    // Soma as pontuações obtidas de cada resposta
     double total = 0.0;
     for (Resposta resp : respostas) {
-      Item<? extends Resposta> item = buscarItemPorId(resp.getItemId());
-      if (item != null) {
-        // Faz correspondência segura entre o tipo do item e da resposta
-        if (item instanceof QuestaoAlternativa && resp instanceof RespostaAlternativa) {
-          total += ((QuestaoAlternativa) item).calcularPontuacao((RespostaAlternativa) resp);
-        } else if (item instanceof QuestaoDissertativa && resp instanceof RespostaDissertativa) {
-          total += ((QuestaoDissertativa) item).calcularPontuacao((RespostaDissertativa) resp);
-        }
+      if (resp.getPontuacaoObtida() != null) {
+        total += resp.getPontuacaoObtida();
       }
     }
     this.notaFinal = total;

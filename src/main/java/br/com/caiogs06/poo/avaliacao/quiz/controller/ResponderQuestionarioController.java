@@ -74,6 +74,11 @@ public class ResponderQuestionarioController extends BaseController {
       // Processa cada questão
       for (int i = 0; i < itens.size(); i++) {
         Item<?> item = itens.get(i);
+
+        if (item == null) {
+          throw new IllegalArgumentException("Questão inválida.");
+        }
+
         String respostaRaw = params.get("questao" + (i + 1)); // HTML deve enviar name="questao1", "questao2"...
 
         if (respostaRaw == null || respostaRaw.isBlank()) {
@@ -81,12 +86,16 @@ public class ResponderQuestionarioController extends BaseController {
         }
 
         Resposta resposta;
-        if (item instanceof QuestaoAlternativa) {
+        if (item instanceof QuestaoAlternativa qa) {
           int idx = Integer.parseInt(respostaRaw);
-          Long alternativaId = ((QuestaoAlternativa) item).getAlternativas().get(idx).getId();
-          resposta = new RespostaAlternativa(item.getId(), alternativaId);
+          Long alternativaId = qa.getAlternativas().get(idx).getId();
+          // Calcular pontuação: se acertou, recebe pontuação máxima, senão 0
+          boolean acertou = qa.getAlternativas().get(idx).getEstaCorreta();
+          Double pontuacao = acertou ? qa.getPontuacaoMaxima() : 0.0;
+          resposta = new RespostaAlternativa(item.getId(), alternativaId, pontuacao);
         } else {
-          resposta = new RespostaDissertativa(item.getId(), respostaRaw);
+          // Dissertativas começam com 0, professor corrige depois
+          resposta = new RespostaDissertativa(item.getId(), respostaRaw, 0.0);
         }
         resultado.adicionarResposta(resposta);
       }
@@ -95,6 +104,9 @@ public class ResponderQuestionarioController extends BaseController {
       redirect.addFlashAttribute("sucesso", "Enviado com sucesso!");
       return "redirect:/visualizar-resultado?id=" + resultadoId;
 
+    } catch (IllegalArgumentException e) {
+      redirect.addFlashAttribute("erro", "Erro ao enviar: " + e.getMessage());
+      return "redirect:/responder-questionario?id=" + id;
     } catch (Exception e) {
       redirect.addFlashAttribute("erro", "Erro ao enviar: " + e.getMessage());
       return "redirect:/responder-questionario?id=" + id;
