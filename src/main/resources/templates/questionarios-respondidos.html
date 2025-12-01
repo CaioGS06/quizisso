@@ -17,20 +17,20 @@
     <div class="grade-questionarios">
       <!-- Loop através dos questionários respondidos -->
       <div class="card-questionario" th:each="resultado : ${resultados}"
-        th:onclick="'window.location.href=\'/visualizar-resultado?questionarioId=' + ${resultado.questionario.id} + '\''">
-        <div class="imagem-questionario">
-          <img th:src="@{'/img/' + ${resultado.questionario.nomeImagem}}" th:alt="${resultado.questionario.titulo}"
-            alt="Imagem do questionário">
+        th:onclick="'window.location.href=\'/visualizar-resultado?id=' + ${resultado.id} + '\''">
+        <div class="banner-questionario">
+          <img th:src="@{'/img/banner' + ${resultado.questionario.bannerId} + '.jpg'}" th:alt="${resultado.questionario.titulo}"
+            alt="Banner do questionário">
         </div>
         <h3 class="titulo-questionario" th:text="${resultado.questionario.titulo}">Título do Quiz</h3>
         <div class="info-criador">
-          <img th:src="@{'/img/' + ${resultado.questionario.criador.nomeFoto}}"
+          <img th:src="@{'/img/usuario' + ${resultado.questionario.criador.fotoId} + '.jpg'}"
             th:alt="${resultado.questionario.criador.nome}" class="foto-criador" alt="Foto do criador">
           <span class="nome-criador" th:text="${resultado.questionario.criador.nome}">Nome do Criador</span>
         </div>
         <div class="nota-badge">
           <i class="ti ti-circle-check"></i>
-          <span th:text="'Nota: ' + ${#numbers.formatDecimal(resultado.notaFinal, 1, 1)} + '/10'">Nota: 0.0/10</span>
+          <span th:text="'Nota: ' + ${#numbers.formatDecimal(resultado.notaFinal, 1, 1)} + '/' + ${#numbers.formatDecimal(resultado.questionario.obterPontuacaoMaxima(), 1, 1)}">Nota: 0.0/10</span>
         </div>
       </div>
 

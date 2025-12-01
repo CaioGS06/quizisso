@@ -43,6 +43,34 @@ public class ResultadoQuestionario {
     respostas.add(resposta);
   }
 
+  public int getQuantidadeQuestoes() {
+    return questionario.getListaItens().size();
+  }
+
+  public int getQuantidadeAcertos() {
+    if (questionario == null)
+      return 0;
+
+    int corretas = 0;
+    for (Resposta resp : respostas) {
+      Item<? extends Resposta> item = buscarItemPorId(resp.getItemId());
+      if (item != null && item instanceof QuestaoAlternativa && resp instanceof RespostaAlternativa &&
+            ((QuestaoAlternativa) item).respostaEstaCorreta((RespostaAlternativa) resp)) {
+        corretas++;
+      } else if (item != null && item instanceof QuestaoDissertativa && resp instanceof RespostaDissertativa &&
+          ((QuestaoDissertativa) item).respostaEstaCorreta((RespostaDissertativa) resp)) {
+        corretas++;
+      }
+    }
+    return corretas;
+  }
+
+  public int getQuantidadeErros() {
+    if (questionario == null)
+      return 0;
+    return questionario.getListaItens().size() - getQuantidadeAcertos();
+  }
+
   public void calcularNotaFinal() {
     if (questionario == null)
       return;
@@ -50,19 +78,29 @@ public class ResultadoQuestionario {
     // Polimorfismo: o item sabe calcular a nota baseado na resposta
     double total = 0.0;
     for (Resposta resp : respostas) {
-      Item item = buscarItemPorId(resp.getItemId());
+      Item<? extends Resposta> item = buscarItemPorId(resp.getItemId());
       if (item != null) {
-        // Warning suprimido: sabemos que o tipo da resposta bate com o item pela lógica
-        // de negócio
-        total += item.calcularPontuacao(resp);
+        // Faz correspondência segura entre o tipo do item e da resposta
+        if (item instanceof QuestaoAlternativa && resp instanceof RespostaAlternativa) {
+          total += ((QuestaoAlternativa) item).calcularPontuacao((RespostaAlternativa) resp);
+        } else if (item instanceof QuestaoDissertativa && resp instanceof RespostaDissertativa) {
+          total += ((QuestaoDissertativa) item).calcularPontuacao((RespostaDissertativa) resp);
+        }
       }
     }
     this.notaFinal = total;
   }
 
-  private Item buscarItemPorId(Long itemId) {
+  private Item<? extends Resposta> buscarItemPorId(Long itemId) {
     return questionario.getListaItens().stream()
         .filter(i -> i.getId().equals(itemId))
+        .findFirst()
+        .orElse(null);
+  }
+
+  public Resposta buscarRespostaPorItemId(Long itemId) {
+    return respostas.stream()
+        .filter(r -> r.getItemId().equals(itemId))
         .findFirst()
         .orElse(null);
   }

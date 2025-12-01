@@ -55,12 +55,15 @@ public class QuestionarioService {
   }
 
   @Transactional
-  public void salvar(Questionario questionario) {
-    if (!questionario.isValido()) {
-      throw new IllegalStateException("Questionário inválido (Verifique título e itens)");
+  public Long salvar(Questionario questionario) {
+    // Validação básica (título e criador, mas não exige itens)
+    if (questionario.getTitulo() == null || questionario.getTitulo().trim().isEmpty()) {
+      throw new IllegalStateException("Questionário inválido: Título é obrigatório");
     }
-    questionarioDAO.salvar(questionario);
-
+    if (questionario.getCriadorId() == null) {
+      throw new IllegalStateException("Questionário inválido: Criador é obrigatório");
+    }
+    return questionarioDAO.salvar(questionario);
   }
 
   @Transactional

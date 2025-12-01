@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 import br.com.caiogs06.poo.avaliacao.quiz.model.Resposta;
@@ -32,11 +33,9 @@ public class RespostaDAO {
 
   public Long salvar(Resposta resposta, Long resultadoId) {
     if (resposta instanceof RespostaDissertativa rd) {
-      // CORRIGIDO: texto_resposta
       String sql = "INSERT INTO resposta (resultado_id, item_id, tipo, texto_resposta) VALUES (?, ?, 'DISSERTATIVA', ?) RETURNING id";
       return jdbc.queryForObject(sql, Long.class, resultadoId, resposta.getItemId(), rd.getTextoResposta());
     } else if (resposta instanceof RespostaAlternativa ra) {
-      // CORRIGIDO: alternativa_id
       String sql = "INSERT INTO resposta (resultado_id, item_id, tipo, alternativa_id) VALUES (?, ?, 'ALTERNATIVA', ?) RETURNING id";
       return jdbc.queryForObject(sql, Long.class, resultadoId, resposta.getItemId(), ra.getAlternativaId());
     }
@@ -61,7 +60,7 @@ public class RespostaDAO {
 
   private static class RespostaRowMapper implements RowMapper<Resposta> {
     @Override
-    public Resposta mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public Resposta mapRow(@NonNull ResultSet rs, int rowNum) throws SQLException {
       String tipo = rs.getString("tipo");
       if ("DISSERTATIVA".equals(tipo)) {
         return new RespostaDissertativa(

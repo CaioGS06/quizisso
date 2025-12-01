@@ -23,9 +23,32 @@ function fecharModalExcluirQuestionario() {
 }
 
 function confirmarExclusaoQuestionario() {
-  // Lógica de exclusão aqui
-  alert('Questionário excluído!');
-  window.location.href = '/meus-questionarios';
+  const urlParams = new URLSearchParams(window.location.search);
+  const questionarioId = urlParams.get('id');
+  
+  if (!questionarioId) {
+    alert('ID do questionário não encontrado!');
+    return;
+  }
+
+  fetch(`/excluir-questionario?id=${questionarioId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.sucesso) {
+      alert(data.mensagem || 'Questionário excluído com sucesso!');
+      window.location.href = '/meus-questionarios';
+    } else {
+      alert(data.erro || 'Erro ao excluir questionário');
+    }
+  })
+  .catch(error => {
+    alert('Erro ao excluir questionário: ' + error.message);
+  });
 }
 
 function abrirModalExcluirResultado() {
@@ -77,11 +100,62 @@ function fecharMenuUsuario() {
   document.getElementById('menuUsuario').classList.remove('active');
 }
 
+// Funções de Seleção de Banner
+let bannerSelecionadoTemp = null;
+
+function abrirModalSelecionarBanner() {
+  const bannerAtual = document.getElementById('bannerPreview').src;
+  const bannerIdMatch = bannerAtual.match(/banner(\d+)\.jpg/);
+  bannerSelecionadoTemp = bannerIdMatch ? bannerIdMatch[1] : '1';
+  
+  // Marcar o banner atual
+  const radios = document.querySelectorAll('input[name="bannerId"]');
+  radios.forEach(radio => {
+    if (radio.value === bannerSelecionadoTemp) {
+      radio.checked = true;
+    }
+  });
+  
+  document.getElementById('modalSelecionarBanner').classList.add('ativo');
+}
+
+function fecharModalSelecionarBanner() {
+  document.getElementById('modalSelecionarBanner').classList.remove('ativo');
+}
+
+function atualizarBannerPreview(bannerId) {
+  bannerSelecionadoTemp = bannerId;
+}
+
+function confirmarBanner() {
+  if (bannerSelecionadoTemp) {
+    const bannerPreview = document.getElementById('bannerPreview');
+    bannerPreview.src = '/img/banner' + bannerSelecionadoTemp + '.jpg';
+  }
+  fecharModalSelecionarBanner();
+}
+
 // Funções de Edição de Questionário
 function removerQuestao(botao) {
   if (confirm('Tem certeza que deseja remover esta questão?')) {
     botao.closest('.questao-card').remove();
+    atualizarNumerosQuestoes();
   }
+}
+
+function atualizarNumerosQuestoes() {
+  const questoes = document.querySelectorAll('.questao-card');
+  questoes.forEach((questao, index) => {
+    const numeroQuestao = questao.querySelector('.questao-numero');
+    if (numeroQuestao) {
+      numeroQuestao.textContent = 'Questão ' + (index + 1);
+    }
+    // Atualizar também os names dos radio buttons de alternativas
+    const radios = questao.querySelectorAll('input[type="radio"]');
+    radios.forEach(radio => {
+      radio.name = 'correta' + (index + 1);
+    });
+  });
 }
 
 function removerAlternativa(botao) {
@@ -91,65 +165,306 @@ function removerAlternativa(botao) {
   if (alternativas.length > 2) {
     botao.closest('.alternativa-edicao').remove();
   } else {
-    alert('É necessário ter pelo menos 2 alternativas!');
+    alert('Uma questão de alternativas deve ter pelo menos 2 opções.');
+  }
+}
+
+function adicionarAlternativa(botao) {
+  const questaoCard = botao.closest('.questao-card');
+  const alternativasContainer = questaoCard.querySelector('.alternativas-edicao');
+  const questaoNumero = Array.from(document.querySelectorAll('.questao-card')).indexOf(questaoCard) + 1;
+  
+  const novaAlternativa = document.createElement('div');
+  novaAlternativa.className = 'alternativa-edicao';
+  novaAlternativa.innerHTML = `
+    <input type="radio" name="correta${questaoNumero}">
+    <input type="text" class="campo-alternativa" placeholder="Digite a alternativa">
+    <button type="button" class="botao-remover-alternativa" onclick="removerAlternativa(this)">
+      <i class="ti ti-x"></i>
+    </button>
+  `;
+  
+  // Inserir antes do botão "Adicionar Alternativa"
+  botao.parentElement.insertBefore(novaAlternativa, botao);
+}
+
+function trocarTipoQuestao(selectElement) {
+  const questaoCard = selectElement.closest('.questao-card');
+  const tipoAtual = questaoCard.querySelector('.alternativas-edicao, .campo-gabarito');
+  const novoTipo = selectElement.value;
+  
+  // Se já existe conteúdo e está trocando o tipo
+  if (tipoAtual) {
+    const temConteudo = tipoAtual.classList.contains('alternativas-edicao') 
+      ? tipoAtual.querySelectorAll('.campo-alternativa').length > 0
+      : tipoAtual.value.trim() !== '';
+    
+    if (temConteudo && !confirm('Trocar o tipo da questão apagará os dados já preenchidos. Deseja continuar?')) {
+      // Reverter seleção
+      selectElement.value = tipoAtual.classList.contains('alternativas-edicao') ? 'alternativa' : 'dissertativa';
+      return;
+    }
+  }
+  
+  // Remover conteúdo atual
+  const alternativasDiv = questaoCard.querySelector('.alternativas-edicao');
+  const gabaritoTextarea = questaoCard.querySelector('.campo-gabarito');
+  if (alternativasDiv) alternativasDiv.remove();
+  if (gabaritoTextarea) gabaritoTextarea.remove();
+  
+  const enunciadoInput = questaoCard.querySelector('.campo-enunciado');
+  const questaoNumero = Array.from(document.querySelectorAll('.questao-card')).indexOf(questaoCard) + 1;
+  
+  if (novoTipo === 'alternativa') {
+    // Criar alternativas
+    const alternativasDiv = document.createElement('div');
+    alternativasDiv.className = 'alternativas-edicao';
+    alternativasDiv.innerHTML = `
+      <div class="alternativa-edicao">
+        <input type="radio" name="correta${questaoNumero}" checked>
+        <input type="text" class="campo-alternativa" placeholder="Digite a alternativa">
+        <button type="button" class="botao-remover-alternativa" onclick="removerAlternativa(this)">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+      <div class="alternativa-edicao">
+        <input type="radio" name="correta${questaoNumero}">
+        <input type="text" class="campo-alternativa" placeholder="Digite a alternativa">
+        <button type="button" class="botao-remover-alternativa" onclick="removerAlternativa(this)">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+      <button type="button" class="botao-adicionar-alternativa" onclick="adicionarAlternativa(this)">
+        <i class="ti ti-plus"></i>
+        Adicionar Alternativa
+      </button>
+    `;
+    enunciadoInput.after(alternativasDiv);
+  } else {
+    // Criar gabarito
+    const gabaritoTextarea = document.createElement('textarea');
+    gabaritoTextarea.className = 'campo-gabarito';
+    gabaritoTextarea.placeholder = 'Digite o gabarito/resposta esperada...';
+    gabaritoTextarea.rows = 4;
+    enunciadoInput.after(gabaritoTextarea);
   }
 }
 
 function adicionarQuestao() {
-  alert('Adicionar nova questão (funcionalidade a ser implementada)');
+  const formulario = document.querySelector('.formulario-questionario');
+  const acoesFormulario = formulario.querySelector('.acoes-formulario');
+  const questoes = document.querySelectorAll('.questao-card');
+  const novoNumero = questoes.length + 1;
+  
+  const novaQuestao = document.createElement('div');
+  novaQuestao.className = 'questao-card edicao';
+  novaQuestao.innerHTML = `
+    <div class="questao-header">
+      <span class="questao-numero">Questão ${novoNumero}</span>
+      <select class="select-tipo-questao" onchange="trocarTipoQuestao(this)">
+        <option value="alternativa" selected>Alternativa</option>
+        <option value="dissertativa">Dissertativa</option>
+      </select>
+      <button type="button" class="botao-remover-questao" onclick="removerQuestao(this)">
+        <i class="ti ti-x"></i>
+      </button>
+    </div>
+    <input type="text" class="campo-enunciado" placeholder="Digite o enunciado...">
+    <div class="alternativas-edicao">
+      <div class="alternativa-edicao">
+        <input type="radio" name="correta${novoNumero}" checked>
+        <input type="text" class="campo-alternativa" placeholder="Digite a alternativa">
+        <button type="button" class="botao-remover-alternativa" onclick="removerAlternativa(this)">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+      <div class="alternativa-edicao">
+        <input type="radio" name="correta${novoNumero}">
+        <input type="text" class="campo-alternativa" placeholder="Digite a alternativa">
+        <button type="button" class="botao-remover-alternativa" onclick="removerAlternativa(this)">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+      <button type="button" class="botao-adicionar-alternativa" onclick="adicionarAlternativa(this)">
+        <i class="ti ti-plus"></i>
+        Adicionar Alternativa
+      </button>
+    </div>
+  `;
+  
+  acoesFormulario.before(novaQuestao);
 }
 
-// Fecha modais ao clicar fora deles
-window.onclick = function (evento) {
-  const modais = document.querySelectorAll('.modal');
-  modais.forEach(modal => {
-    if (evento.target === modal) {
-      modal.classList.remove('ativo');
-    }
-  });
-}
-
-// Validação do formulário de responder questionário
+// Validação e submissão do formulário de questionário
 document.addEventListener('DOMContentLoaded', function () {
   const formularioQuestionario = document.querySelector('.formulario-questionario');
 
   if (formularioQuestionario) {
-    formularioQuestionario.addEventListener('submit', function (evento) {
-      // Verifica se todas as questões foram respondidas
-      let todasRespondidas = true;
-      let questaoNaoRespondida = 0;
+    // Validação apenas para páginas de criação/edição (que têm campo de título)
+    const titulo = document.querySelector('.campo-titulo-edicao');
+    if (titulo) {
+      formularioQuestionario.addEventListener('submit', function (e) {
+        e.preventDefault();
 
-      // Verifica questões de alternativa (radio buttons)
-      const questoesRadio = formularioQuestionario.querySelectorAll('.alternativas');
-      questoesRadio.forEach((questao, index) => {
-        const radios = questao.querySelectorAll('input[type="radio"]');
-        const algumMarcado = Array.from(radios).some(radio => radio.checked);
-        if (!algumMarcado && todasRespondidas) {
-          todasRespondidas = false;
-          questaoNaoRespondida = index + 1;
+        if (titulo.value.trim() === '') {
+          alert('Por favor, digite um título para o questionário.');
+          titulo.focus();
+          return false;
+        }
+
+        const questoes = document.querySelectorAll('.questao-card');
+        if (questoes.length === 0) {
+          alert('Adicione pelo menos uma questão ao questionário.');
+          return false;
+        }
+
+        let valido = true;
+        questoes.forEach((questao, index) => {
+          const enunciado = questao.querySelector('.campo-enunciado');
+          if (!enunciado || enunciado.value.trim() === '') {
+            alert(`Por favor, preencha o enunciado da Questão ${index + 1}.`);
+            enunciado.focus();
+            valido = false;
+            return;
+          }
+
+          const alternativasDiv = questao.querySelector('.alternativas-edicao');
+          if (alternativasDiv) {
+            // Validar questão de alternativas
+            const alternativas = alternativasDiv.querySelectorAll('.campo-alternativa');
+            let todasPreenchidas = true;
+            alternativas.forEach(alt => {
+              if (alt.value.trim() === '') {
+                todasPreenchidas = false;
+              }
+            });
+
+            if (!todasPreenchidas) {
+              alert(`Por favor, preencha todas as alternativas da Questão ${index + 1}.`);
+              valido = false;
+              return;
+            }
+
+            if (alternativas.length < 2) {
+              alert(`A Questão ${index + 1} deve ter pelo menos 2 alternativas.`);
+              valido = false;
+              return;
+            }
+
+            const radioMarcado = questao.querySelector('input[type="radio"]:checked');
+            if (!radioMarcado) {
+              alert(`Por favor, marque a alternativa correta da Questão ${index + 1}.`);
+              valido = false;
+              return;
+            }
+          } else {
+            // Validar questão dissertativa
+            const gabarito = questao.querySelector('.campo-gabarito');
+            if (!gabarito || gabarito.value.trim() === '') {
+              alert(`Por favor, preencha o gabarito da Questão ${index + 1}.`);
+              gabarito.focus();
+              valido = false;
+              return;
+            }
+          }
+        });
+
+        if (valido) {
+          // Coletar dados e enviar
+          const dados = coletarDadosQuestionario();
+          enviarQuestionario(dados);
         }
       });
-
-      // Verifica questões dissertativas
-      const questoesDissertativas = formularioQuestionario.querySelectorAll('.campo-dissertativa');
-      questoesDissertativas.forEach((campo, index) => {
-        if (campo.value.trim() === '' && todasRespondidas) {
-          todasRespondidas = false;
-          questaoNaoRespondida = questoesRadio.length + index + 1;
-        }
-      });
-
-      if (!todasRespondidas) {
-        evento.preventDefault();
-        alert(`Por favor, responda a questão ${questaoNaoRespondida} antes de enviar.`);
-        return false;
-      }
-
-      // Confirmação antes de enviar
-      if (!confirm('Tem certeza que deseja enviar suas respostas? Você não poderá alterá-las depois.')) {
-        evento.preventDefault();
-        return false;
-      }
-    });
+    }
   }
 });
+
+function coletarDadosQuestionario() {
+  const titulo = document.querySelector('.campo-titulo-edicao').value.trim();
+  const bannerPreview = document.getElementById('bannerPreview');
+  const bannerIdMatch = bannerPreview.src.match(/banner(\d+)\.jpg/);
+  const bannerId = bannerIdMatch ? parseInt(bannerIdMatch[1]) : 1;
+  
+  const questoes = [];
+  
+  document.querySelectorAll('.questao-card').forEach((questaoCard, index) => {
+    const enunciado = questaoCard.querySelector('.campo-enunciado').value.trim();
+    const tipo = questaoCard.querySelector('.select-tipo-questao').value;
+    
+    const questao = {
+      ordem: index + 1,
+      enunciado: enunciado,
+      tipo: tipo
+    };
+    
+    if (tipo === 'alternativa') {
+      const alternativas = [];
+      const alternativasDivs = questaoCard.querySelectorAll('.alternativa-edicao');
+      alternativasDivs.forEach((altDiv, altIndex) => {
+        const descricao = altDiv.querySelector('.campo-alternativa').value.trim();
+        const correta = altDiv.querySelector('input[type="radio"]').checked;
+        alternativas.push({
+          ordem: altIndex + 1,
+          descricao: descricao,
+          correta: correta
+        });
+      });
+      questao.alternativas = alternativas;
+    } else {
+      questao.gabarito = questaoCard.querySelector('.campo-gabarito').value.trim();
+    }
+    
+    questoes.push(questao);
+  });
+  
+  return {
+    titulo: titulo,
+    bannerId: bannerId,
+    questoes: questoes
+  };
+}
+
+function enviarQuestionario(dados) {
+  // Determinar se é criação ou edição baseado na URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const questionarioId = urlParams.get('id');
+  
+  const url = questionarioId ? '/editar-questionario' : '/criar-questionario';
+  const method = 'POST';
+  
+  if (questionarioId) {
+    dados.id = parseInt(questionarioId); // Converter para número
+  }
+  
+  fetch(url, {
+    method: method,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(dados)
+  })
+  .then(response => {
+    if (!response.ok) {
+      return response.json().then(err => Promise.reject(err));
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (data.requerConfirmacao) {
+      // Questionário possui resultados, solicitar confirmação
+      if (confirm(data.mensagem)) {
+        // Usuário confirmou, enviar novamente com flag de confirmação
+        dados.confirmarExclusao = true;
+        enviarQuestionario(dados);
+      }
+    } else if (data.sucesso) {
+      alert(data.mensagem || 'Questionário salvo com sucesso!');
+      window.location.href = '/meus-questionarios';
+    } else {
+      alert(data.erro || 'Erro ao salvar questionário');
+    }
+  })
+  .catch(error => {
+    alert('Erro ao salvar questionário: ' + (error.erro || error.message));
+  });
+}

@@ -22,8 +22,8 @@
       <!-- Loop através dos questionários do usuário -->
       <div class="card-questionario" th:each="quiz : ${questionarios}"
         th:onclick="'window.location.href=\'/editar-questionario?id=' + ${quiz.id} + '\''">
-        <div class="imagem-questionario">
-          <img th:src="@{'/img/' + ${quiz.nomeImagem}}" th:alt="${quiz.titulo}" alt="Imagem do questionário">
+        <div class="banner-questionario">
+          <img th:src="@{'/img/banner' + ${quiz.bannerId} + '.jpg'}" th:alt="${quiz.titulo}" alt="Banner do questionário">
         </div>
         <h3 class="titulo-questionario" th:text="${quiz.titulo}">Título do Quiz</h3>
       </div>

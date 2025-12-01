@@ -2,7 +2,7 @@ package br.com.caiogs06.poo.avaliacao.quiz.controller;
 
 import org.springframework.ui.Model;
 
-import br.com.caiogs06.poo.avaliacao.quiz.model.FotoPerfil;
+import br.com.caiogs06.poo.avaliacao.quiz.model.Imagens;
 import jakarta.servlet.http.HttpSession;
 
 public abstract class BaseController {
@@ -18,8 +18,8 @@ public abstract class BaseController {
   protected void adicionarDadosUsuario(Model model, HttpSession session) {
     model.addAttribute("usuarioNome", session.getAttribute("usuarioNome"));
     model.addAttribute("usuarioEmail", session.getAttribute("usuarioEmail"));
-    String foto = FotoPerfil.porId((Integer) session.getAttribute("usuarioFotoId")).getNomeArquivo();
+    String foto = Imagens.porId((Integer) session.getAttribute("usuarioFotoId")).getNomeArquivo();
     model.addAttribute("usuarioFoto", foto);
-    model.addAttribute("fotosDisponiveis", FotoPerfil.values());
+    model.addAttribute("fotosDisponiveis", Imagens.obterFotosUsuarios());
   }
 }

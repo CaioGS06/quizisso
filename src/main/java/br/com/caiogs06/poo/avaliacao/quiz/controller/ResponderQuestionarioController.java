@@ -45,8 +45,9 @@ public class ResponderQuestionarioController extends BaseController {
 
     // Verifica se já respondeu
     Usuario usuario = usuarioService.buscarPorId(obterUsuarioId(session));
-    if (resultadoService.buscarResultado(questionario, usuario) != null) {
-      return "redirect:/questionarios-respondidos";
+    ResultadoQuestionario resultadoExistente = resultadoService.buscarResultado(questionario, usuario);
+    if (resultadoExistente != null) {
+      return "redirect:/visualizar-resultado?id=" + resultadoExistente.getId();
     }
 
     adicionarDadosUsuario(model, session);

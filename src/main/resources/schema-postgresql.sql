@@ -111,7 +111,7 @@ INSERT INTO usuario (nome, email, senha, foto_id) VALUES
 
 -- Questionário 1: Java Básico
 INSERT INTO questionario (titulo, descricao, criador_id, banner_id) VALUES
-('Java Básico', 'Questionário sobre conceitos fundamentais de Java', 1, NULL);
+('Java Básico', 'Questionário sobre conceitos fundamentais de Java', 1, 1);
 
 INSERT INTO item (questionario_id, tipo, enunciado, gabarito, pontuacao_maxima, ordem) VALUES
 (1, 'ALTERNATIVA', 'Qual é a palavra-chave correta para declarar uma classe em Java?', NULL, 1.00, 1),
@@ -136,7 +136,7 @@ INSERT INTO alternativa (item_id, descricao, esta_correta, ordem) VALUES
 
 -- Questionário 2: Programação Orientada a Objetos
 INSERT INTO questionario (titulo, descricao, criador_id, banner_id) VALUES
-('POO em Java', 'Avaliação sobre Programação Orientada a Objetos', 1, NULL);
+('POO em Java', 'Avaliação sobre Programação Orientada a Objetos', 1, 2);
 
 INSERT INTO item (questionario_id, tipo, enunciado, gabarito, pontuacao_maxima, ordem) VALUES
 (2, 'DISSERTATIVA', 'Explique o conceito de herança em POO.', 'Herança é um mecanismo que permite criar novas classes baseadas em classes existentes, reutilizando código e estabelecendo uma hierarquia', 2.00, 1),
@@ -162,7 +162,7 @@ INSERT INTO alternativa (item_id, descricao, esta_correta, ordem) VALUES
 
 -- Questionário 3: Estruturas de Dados
 INSERT INTO questionario (titulo, descricao, criador_id, banner_id) VALUES
-('Estruturas de Dados', 'Quiz sobre estruturas de dados em Java', 1, NULL);
+('Estruturas de Dados', 'Quiz sobre estruturas de dados em Java', 1, 3);
 
 INSERT INTO item (questionario_id, tipo, enunciado, gabarito, pontuacao_maxima, ordem) VALUES
 (3, 'ALTERNATIVA', 'Qual interface representa uma coleção ordenada que permite duplicatas?', NULL, 1.00, 1),
@@ -187,7 +187,7 @@ INSERT INTO alternativa (item_id, descricao, esta_correta, ordem) VALUES
 
 -- Questionário 4: Banco de Dados
 INSERT INTO questionario (titulo, descricao, criador_id, banner_id) VALUES
-('SQL e Banco de Dados', 'Conhecimentos em SQL e modelagem de dados', 1, NULL);
+('SQL e Banco de Dados', 'Conhecimentos em SQL e modelagem de dados', 1, 4);
 
 INSERT INTO item (questionario_id, tipo, enunciado, gabarito, pontuacao_maxima, ordem) VALUES
 (4, 'ALTERNATIVA', 'Qual comando SQL é usado para recuperar dados de uma tabela?', NULL, 1.00, 1),
@@ -216,7 +216,7 @@ INSERT INTO alternativa (item_id, descricao, esta_correta, ordem) VALUES
 
 -- Questionário 5: HTML e CSS
 INSERT INTO questionario (titulo, descricao, criador_id, banner_id) VALUES
-('Fundamentos de HTML e CSS', 'Quiz sobre desenvolvimento web front-end', 2, NULL);
+('Fundamentos de HTML e CSS', 'Quiz sobre desenvolvimento web front-end', 2, 5);
 
 INSERT INTO item (questionario_id, tipo, enunciado, gabarito, pontuacao_maxima, ordem) VALUES
 (5, 'ALTERNATIVA', 'Qual tag HTML é usada para criar um hiperlink?', NULL, 1.00, 1),
@@ -241,7 +241,7 @@ INSERT INTO alternativa (item_id, descricao, esta_correta, ordem) VALUES
 
 -- Questionário 6: JavaScript
 INSERT INTO questionario (titulo, descricao, criador_id, banner_id) VALUES
-('JavaScript Essencial', 'Avaliação sobre JavaScript básico', 2, NULL);
+('JavaScript Essencial', 'Avaliação sobre JavaScript básico', 2, 6);
 
 INSERT INTO item (questionario_id, tipo, enunciado, gabarito, pontuacao_maxima, ordem) VALUES
 (6, 'DISSERTATIVA', 'Explique a diferença entre var, let e const.', 'var tem escopo de função, let e const têm escopo de bloco. const não pode ser reatribuído', 2.00, 1),
@@ -266,7 +266,7 @@ INSERT INTO alternativa (item_id, descricao, esta_correta, ordem) VALUES
 
 -- Questionário 7: Git e Controle de Versão
 INSERT INTO questionario (titulo, descricao, criador_id, banner_id) VALUES
-('Git Essencial', 'Conhecimentos sobre controle de versão com Git', 2, NULL);
+('Git Essencial', 'Conhecimentos sobre controle de versão com Git', 2, 7);
 
 INSERT INTO item (questionario_id, tipo, enunciado, gabarito, pontuacao_maxima, ordem) VALUES
 (7, 'ALTERNATIVA', 'Qual comando Git é usado para clonar um repositório?', NULL, 1.00, 1),
@@ -295,7 +295,7 @@ INSERT INTO alternativa (item_id, descricao, esta_correta, ordem) VALUES
 
 -- Questionário 8: Python Básico
 INSERT INTO questionario (titulo, descricao, criador_id, banner_id) VALUES
-('Python para Iniciantes', 'Quiz sobre fundamentos de Python', 3, NULL);
+('Python para Iniciantes', 'Quiz sobre fundamentos de Python', 3, 8);
 
 INSERT INTO item (questionario_id, tipo, enunciado, gabarito, pontuacao_maxima, ordem) VALUES
 (8, 'ALTERNATIVA', 'Qual função é usada para exibir texto no console em Python?', NULL, 1.00, 1),
@@ -325,7 +325,7 @@ INSERT INTO alternativa (item_id, descricao, esta_correta, ordem) VALUES
 
 -- Questionário 9: Redes de Computadores
 INSERT INTO questionario (titulo, descricao, criador_id, banner_id) VALUES
-('Fundamentos de Redes', 'Conceitos básicos de redes de computadores', 3, NULL);
+('Fundamentos de Redes', 'Conceitos básicos de redes de computadores', 3, 9);
 
 INSERT INTO item (questionario_id, tipo, enunciado, gabarito, pontuacao_maxima, ordem) VALUES
 (9, 'DISSERTATIVA', 'Explique o que é o protocolo TCP/IP.', 'TCP/IP é um conjunto de protocolos de comunicação usado para interconectar dispositivos de rede na Internet', 2.00, 1),
@@ -354,7 +354,7 @@ INSERT INTO alternativa (item_id, descricao, esta_correta, ordem) VALUES
 
 -- Questionário 10: Spring Boot
 INSERT INTO questionario (titulo, descricao, criador_id, banner_id) VALUES
-('Spring Boot Fundamentals', 'Conhecimentos sobre Spring Boot e desenvolvimento web', 4, NULL);
+('Spring Boot Fundamentals', 'Conhecimentos sobre Spring Boot e desenvolvimento web', 4, 10);
 
 INSERT INTO item (questionario_id, tipo, enunciado, gabarito, pontuacao_maxima, ordem) VALUES
 (10, 'ALTERNATIVA', 'Qual anotação marca uma classe como um controlador REST?', NULL, 1.00, 1),

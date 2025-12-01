@@ -1,5 +1,6 @@
 package br.com.caiogs06.poo.avaliacao.quiz.repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,12 +20,15 @@ public class ResultadoDAO {
 
   @NonNull
   private final RowMapper<ResultadoQuestionario> rowMapper = (rs, rowNum) -> {
+    BigDecimal notaFinalBd = (BigDecimal) rs.getObject("nota_final");
+    Double notaFinal = notaFinalBd != null ? notaFinalBd.doubleValue() : null;
+
     return new ResultadoQuestionario(
-        rs.getLong("id"),
-        rs.getLong("questionario_id"),
-        rs.getLong("respondente_id"),
-        (Double) rs.getObject("nota_final"),
-        rs.getObject("data_submissao", LocalDateTime.class));
+      rs.getLong("id"),
+      rs.getLong("questionario_id"),
+      rs.getLong("respondente_id"),
+      notaFinal,
+      rs.getObject("data_submissao", LocalDateTime.class));
   };
 
   public List<ResultadoQuestionario> listarPorRespondente(Long respondenteId) {
@@ -54,5 +58,20 @@ public class ResultadoDAO {
 
   public void deletar(Long id) {
     jdbc.update("DELETE FROM resultado_questionario WHERE id = ?", id);
+  }
+
+  public List<Long> listarIdsPorQuestionario(Long questionarioId) {
+    String sql = "SELECT id FROM resultado_questionario WHERE questionario_id = ?";
+    return jdbc.queryForList(sql, Long.class, questionarioId);
+  }
+
+  public void deletarPorQuestionario(Long questionarioId) {
+    jdbc.update("DELETE FROM resultado_questionario WHERE questionario_id = ?", questionarioId);
+  }
+
+  public boolean existemResultadosPorQuestionario(Long questionarioId) {
+    String sql = "SELECT COUNT(*) FROM resultado_questionario WHERE questionario_id = ?";
+    Integer count = jdbc.queryForObject(sql, Integer.class, questionarioId);
+    return count != null && count > 0;
   }
 }

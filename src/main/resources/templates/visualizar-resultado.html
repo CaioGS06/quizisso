@@ -20,14 +20,14 @@
           <h1 th:text="${resultado.questionario.titulo}">Quiz de Programação</h1>
           <div class="info-resultado-header">
             <div class="info-criador-header">
-              <img th:src="@{'/img/' + ${resultado.questionario.criador.nomeFoto}}"
+              <img th:src="@{'/img/usuario' + ${resultado.questionario.criador.fotoId} + '.jpg'}"
                 th:alt="${resultado.questionario.criador.nome}" class="foto-criador" alt="Foto do criador">
               <span>Criado por <strong th:text="${resultado.questionario.criador.nome}">Criador</strong></span>
             </div>
             <div class="nota-resultado">
               <i class="ti ti-circle-check"></i>
               <span>Nota Final: <strong
-                  th:text="${#numbers.formatDecimal(resultado.notaFinal, 1, 1)} + '/10'">0.0/10</strong></span>
+                  th:text="${#numbers.formatDecimal(resultado.notaFinal, 1, 1)} + '/' + ${#numbers.formatDecimal(resultado.questionario.obterPontuacaoMaxima(), 1, 1)}">0.0/10</strong></span>
             </div>
           </div>
           <button class="botao-excluir-resultado" onclick="abrirModalExcluirResultado()">
@@ -39,14 +39,14 @@
 
       <div class="formulario-questionario">
         <!-- Loop através dos itens do questionário -->
-        <div class="questao-card resultado" th:each="item, iterStat : ${resultado.questionario.itens}"
-          th:with="resposta=${resultado.obterRespostas().stream().filter(r -> r.itemId == item.id).findFirst().orElse(null)},
-                   estaCorreta=${item.class.simpleName == 'ItemAlternativa' ? (resposta != null && item.verificarResposta(resposta)) : null}"
+        <div class="questao-card resultado" th:each="item, iterStat : ${resultado.questionario.listaItens}"
+          th:with="resposta=${resultado.buscarRespostaPorItemId(item.id)},
+                   estaCorreta=${item.tipo == 'ALTERNATIVA' ? (resposta != null && item.respostaEstaCorreta(resposta)) : null}"
           th:classappend="${estaCorreta != null ? (estaCorreta ? 'correta' : 'incorreta') : ''}">
           <div class="questao-header">
             <span class="questao-numero" th:text="'Questão ' + ${iterStat.count}">Questão 1</span>
             <span class="questao-tipo"
-              th:text="${item.class.simpleName == 'ItemAlternativa' ? 'Alternativa' : 'Dissertativa'}">Alternativa</span>
+              th:text="${item.getTipo() == 'ALTERNATIVA' ? 'Alternativa' : 'Dissertativa'}">Tipo</span>
             <span class="badge-status correto" th:if="${estaCorreta != null && estaCorreta}">
               <i class="ti ti-check"></i>
               Correta
@@ -59,21 +59,32 @@
           <h3 class="questao-enunciado" th:text="${item.enunciado}">Enunciado</h3>
 
           <!-- Alternativas (apenas para ItemAlternativa) -->
-          <div class="alternativas" th:if="${item.class.simpleName == 'ItemAlternativa'}">
+          <div class="alternativas" th:if="${item.getTipo() == 'ALTERNATIVA'}">
             <div th:each="alternativa, altIterStat : ${item.alternativas}" class="alternativa"
-              th:classappend="${resposta != null && resposta.alternativaSelecionada == altIterStat.index ? 'selecionada' : ''} + ' ' + ${alternativa == item.respostaCorreta ? (resposta != null && resposta.alternativaSelecionada == altIterStat.index ? 'correta' : 'correta-gabarito') : (resposta != null && resposta.alternativaSelecionada == altIterStat.index ? 'incorreta' : '')}">
+              th:with="estaSelecionada=${resposta != null && resposta.alternativaId == alternativa.id},
+                       estaCorreta=${alternativa.estaCorreta}"
+              th:classappend="${estaSelecionada 
+                ? 'selecionada' 
+                : ''} 
+              + ' ' + ${estaCorreta  
+                ? (estaSelecionada 
+                  ? 'correta' 
+                  : 'correta-gabarito') 
+                : (estaSelecionada
+                  ? 'incorreta' 
+                  : '')}">
               <i class="ti ti-circle-check"
-                th:if="${resposta != null && resposta.alternativaSelecionada == altIterStat.index && alternativa == item.respostaCorreta}"></i>
+                th:if="${estaSelecionada && estaCorreta}"></i>
               <i class="ti ti-circle-x"
-                th:if="${resposta != null && resposta.alternativaSelecionada == altIterStat.index && alternativa != item.respostaCorreta}"></i>
+                th:if="${estaSelecionada && !estaCorreta}"></i>
               <i class="ti ti-check"
-                th:if="${resposta != null && resposta.alternativaSelecionada != altIterStat.index && alternativa == item.respostaCorreta}"></i>
-              <span th:text="${alternativa}">Alternativa</span>
+                th:if="${!estaSelecionada && estaCorreta}"></i>
+              <span th:text="${alternativa.descricao}">Alternativa</span>
             </div>
           </div>
 
           <!-- Resposta Dissertativa -->
-          <div th:if="${item.class.simpleName == 'ItemDissertativa'}">
+          <div th:if="${item.getTipo() == 'DISSERTATIVA'}">
             <div class="resposta-dissertativa">
               <h4>Sua resposta:</h4>
               <p th:text="${resposta != null ? resposta.textoResposta : 'Sem resposta'}">Texto da resposta</p>
@@ -88,15 +99,15 @@
         <div class="resumo-resultado">
           <div class="estatistica">
             <i class="ti ti-circle-check"></i>
-            <span><strong th:text="${resultado.quantidadeCorretas()}">0</strong> corretas</span>
+            <span><strong th:text="${resultado.getQuantidadeAcertos()}">0</strong> corretas</span>
           </div>
           <div class="estatistica">
             <i class="ti ti-circle-x"></i>
-            <span><strong th:text="${resultado.quantidadeIncorretas()}">0</strong> incorretas</span>
+            <span><strong th:text="${resultado.getQuantidadeErros()}">0</strong> incorretas</span>
           </div>
           <div class="estatistica">
             <i class="ti ti-calculator"></i>
-            <span>Total: <strong th:text="${resultado.questionario.quantidadeItens()}">0</strong> questões</span>
+            <span>Total: <strong th:text="${resultado.getQuantidadeQuestoes()}">0</strong> questões</span>
           </div>
         </div>
       </div>

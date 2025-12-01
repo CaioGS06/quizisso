@@ -26,7 +26,7 @@
             th:src - Atributo dinâmico do Thymeleaf
             ${quiz.nomeImagem} acessa o método getNomeImagem() do objeto
           -->
-          <img th:src="@{'/img/questionario' + ${quiz.bannerId} + '.jpg'}" th:alt="${quiz.titulo}"
+          <img th:src="@{'/img/banner' + ${quiz.bannerId} + '.jpg'}" th:alt="${quiz.titulo}"
             alt="Banner do questionário">
         </div>
 

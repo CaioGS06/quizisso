@@ -18,6 +18,15 @@
         </button>
         <div class="info-questionario">
           <input type="text" class="campo-titulo-edicao" placeholder="Título do Questionário">
+          <div class="banner-seletor">
+            <div class="banner-preview" onclick="abrirModalSelecionarBanner()">
+              <img src="/img/banner0.jpg" alt="Banner selecionado" id="bannerPreview">
+              <div class="banner-overlay">
+                <i class="ti ti-photo"></i>
+                <span>Selecionar Banner</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -39,6 +48,34 @@
       </form>
     </div>
   </main>
+
+  <!-- Modal de Seleção de Banner -->
+  <div id="modalSelecionarBanner" class="modal">
+    <div class="modal-conteudo">
+      <div class="modal-header">
+        <h3>Selecionar Banner do Questionário</h3>
+        <button class="botao-fechar-modal" onclick="fecharModalSelecionarBanner()">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+      <div class="modal-corpo">
+        <p>Escolha um banner para o questionário:</p>
+        <div class="grade-fotos">
+          <label class="opcao-foto" th:each="banner : ${banners}">
+            <input type="radio" name="bannerId" th:value="${banner.id}" th:checked="${banner.id == 1}" onclick="atualizarBannerPreview(this.value)">
+            <img th:src="@{'/img/' + ${banner.nomeArquivo}}" th:alt="${banner.descricao}">
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="botao-cancelar" onclick="fecharModalSelecionarBanner()">Cancelar</button>
+        <button type="button" class="botao-confirmar" onclick="confirmarBanner()">
+          <i class="ti ti-check"></i>
+          Confirmar
+        </button>
+      </div>
+    </div>
+  </div>
 
   <th:block th:replace="~{fragments/cabecalho :: scripts}"></th:block>
 </body>

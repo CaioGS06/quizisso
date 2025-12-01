@@ -19,6 +19,15 @@
         <div class="info-questionario">
           <input type="text" class="campo-titulo-edicao" th:value="${questionario.titulo}"
             placeholder="Título do Questionário">
+          <div class="banner-seletor">
+            <div class="banner-preview" onclick="abrirModalSelecionarBanner()">
+              <img th:src="@{'/img/banner' + ${questionario.bannerId} + '.jpg'}" alt="Banner selecionado" id="bannerPreview">
+              <div class="banner-overlay">
+                <i class="ti ti-photo"></i>
+                <span>Trocar Banner</span>
+              </div>
+            </div>
+          </div>
           <button class="botao-excluir-questionario" onclick="abrirModalExcluirQuestionario()">
             <i class="ti ti-trash"></i>
             Excluir Questionário
@@ -28,13 +37,13 @@
 
       <form class="formulario-questionario">
         <!-- Loop através dos itens do questionário -->
-        <div class="questao-card edicao" th:each="item, iterStat : ${questionario.itens}">
+        <div class="questao-card edicao" th:each="item, iterStat : ${questionario.listaItens}">
           <div class="questao-header">
             <span class="questao-numero" th:text="'Questão ' + ${iterStat.count}">Questão 1</span>
-            <select class="select-tipo-questao">
-              <option value="alternativa" th:selected="${item.class.simpleName == 'ItemAlternativa'}">Alternativa
+            <select class="select-tipo-questao" onchange="trocarTipoQuestao(this)">
+              <option value="alternativa" th:selected="${item.getTipo() == 'ALTERNATIVA'}">Alternativa
               </option>
-              <option value="dissertativa" th:selected="${item.class.simpleName == 'ItemDissertativa'}">Dissertativa
+              <option value="dissertativa" th:selected="${item.getTipo() == 'DISSERTATIVA'}">Dissertativa
               </option>
             </select>
             <button type="button" class="botao-remover-questao" onclick="removerQuestao(this)">
@@ -44,23 +53,23 @@
           <input type="text" class="campo-enunciado" th:value="${item.enunciado}" placeholder="Digite o enunciado...">
 
           <!-- Alternativas (apenas para ItemAlternativa) -->
-          <div class="alternativas-edicao" th:if="${item.class.simpleName == 'ItemAlternativa'}">
+          <div class="alternativas-edicao" th:if="${item.tipo == 'ALTERNATIVA'}">
             <div class="alternativa-edicao" th:each="alternativa, altIterStat : ${item.alternativas}">
               <input type="radio" th:name="'correta' + ${iterStat.count}"
-                th:checked="${alternativa == item.respostaCorreta}">
-              <input type="text" class="campo-alternativa" th:value="${alternativa}" placeholder="Digite a alternativa">
+                th:checked="${alternativa.estaCorreta}">
+              <input type="text" class="campo-alternativa" th:value="${alternativa.descricao}" placeholder="Digite a alternativa">
               <button type="button" class="botao-remover-alternativa" onclick="removerAlternativa(this)">
                 <i class="ti ti-x"></i>
               </button>
             </div>
-            <button type="button" class="botao-adicionar-alternativa">
+            <button type="button" class="botao-adicionar-alternativa" onclick="adicionarAlternativa(this)">
               <i class="ti ti-plus"></i>
               Adicionar Alternativa
             </button>
           </div>
 
           <!-- Gabarito (apenas para ItemDissertativa) -->
-          <textarea class="campo-gabarito" th:if="${item.class.simpleName == 'ItemDissertativa'}"
+          <textarea class="campo-gabarito" th:if="${item.tipo == 'DISSERTATIVA'}"
             placeholder="Digite o gabarito/resposta esperada..." rows="4" th:text="${item.gabarito}"></textarea>
         </div>
 
@@ -77,6 +86,34 @@
       </form>
     </div>
   </main>
+
+  <!-- Modal de Seleção de Banner -->
+  <div id="modalSelecionarBanner" class="modal">
+    <div class="modal-conteudo">
+      <div class="modal-header">
+        <h3>Selecionar Banner do Questionário</h3>
+        <button class="botao-fechar-modal" onclick="fecharModalSelecionarBanner()">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+      <div class="modal-corpo">
+        <p>Escolha um banner para o questionário:</p>
+        <div class="grade-fotos">
+          <label class="opcao-foto" th:each="banner : ${banners}">
+            <input type="radio" name="bannerId" th:value="${banner.id}" th:checked="${banner.id == questionario.bannerId}" onclick="atualizarBannerPreview(this.value)">
+            <img th:src="@{'/img/' + ${banner.nomeArquivo}}" th:alt="${banner.descricao}">
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="botao-cancelar" onclick="fecharModalSelecionarBanner()">Cancelar</button>
+        <button type="button" class="botao-confirmar" onclick="confirmarBanner()">
+          <i class="ti ti-check"></i>
+          Confirmar
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal de Confirmação de Exclusão -->
   <div id="modalExcluirQuestionario" class="modal">

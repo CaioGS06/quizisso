@@ -92,4 +92,22 @@ public class ResultadoService {
 
     return resultadoId;
   }
+
+  public boolean existemResultadosPorQuestionario(Long questionarioId) {
+    return resultadoDAO.existemResultadosPorQuestionario(questionarioId);
+  }
+
+  @Transactional
+  public void deletarPorQuestionario(Long questionarioId) {
+    // Primeiro buscar todos os IDs de resultados para deletar as respostas
+    List<Long> resultadoIds = resultadoDAO.listarIdsPorQuestionario(questionarioId);
+    
+    // Deletar todas as respostas de cada resultado
+    for (Long resultadoId : resultadoIds) {
+      respostaService.deletarPorResultado(resultadoId);
+    }
+    
+    // Depois deletar os resultados
+    resultadoDAO.deletarPorQuestionario(questionarioId);
+  }
 }
