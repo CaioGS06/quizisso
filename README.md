@@ -12,9 +12,8 @@ Projeto desenvolvido para a disciplina de **Programação Orientada a Objetos**,
 - 📚 **Meus Questionários**: Visualização e criação dos questionários criados pelo usuário
 - ✅ **Questionários Respondidos**: Histórico de questionários já respondidos com notas e criador
 - 📝 **Responder Questionário**: Interface para responder questões de múltipla escolha e dissertativas
-- ✏️ **Editar Questionário**: Sistema completo de edição de questionários com adição/remoção de questões
-- � **Visualizar Resultado**: Visualização detalhada de respostas com gabarito e correção
-- ➕ **Criar Questionário**: Interface para criação de novos questionários
+- ✏️ **Criar/Editar Questionário**: Formulário unificado para criação e edição de questionários com adição/remoção de questões
+- 📊 **Visualizar Resultados**: Visualização detalhada de todos os resultados de um questionário com dados dos respondentes e métricas
 -  **Menu de Usuário**: Opções para alterar foto, nome e deslogar (com modais de confirmação)
 - 🗑️ **Exclusão com Confirmação**: Modais de confirmação para excluir questionários e resultados
 - 🎨 **Design Responsivo**: Interface adaptável para diferentes tamanhos de tela com breakpoint em 768px
@@ -58,11 +57,11 @@ quizisso/
 │   │   │   │   ├── HomeController.java       # Controller da página inicial
 │   │   │   │   ├── LoginController.java      # Controller de autenticação
 │   │   │   │   ├── MeusQuestionariosController.java
-│   │   │   │   ├── CriarQuestionarioController.java
-│   │   │   │   ├── EditarQuestionarioController.java
+│   │   │   │   ├── FormularioQuestionarioController.java
 │   │   │   │   ├── ResponderQuestionarioController.java
 │   │   │   │   ├── QuestionariosRespondidosController.java
-│   │   │   │   └── VisualizarResultadoController.java
+│   │   │   │   ├── VisualizarResultadoController.java
+│   │   │   │   └── VisualizarResultadosController.java
 │   │   │   ├── model/                        # Camada de Model (Entidades)
 │   │   │   │   ├── Usuario.java              # Entidade de usuário
 │   │   │   │   ├── Questionario.java         # Entidade de questionário
@@ -103,11 +102,11 @@ quizisso/
 │   │           ├── login.html                # Página de login
 │   │           ├── home.html                 # Página inicial (landing page)
 │   │           ├── meus-questionarios.html   # Página de questionários do usuário
-│   │           ├── criar-questionario.html   # Página de criação
-│   │           ├── editar-questionario.html  # Página de edição
+│   │           ├── formulario-questionario.html # Página unificada de criação/edição
 │   │           ├── responder-questionario.html # Página para responder
 │   │           ├── questionarios-respondidos.html # Histórico de respostas
-│   │           └── visualizar-resultado.html # Visualização de resultados
+│   │           ├── visualizar-resultado.html # Visualização de resultado individual
+│   │           └── visualizar-resultados.html # Visualização de todos os resultados
 │   └── test/
 │       └── java/br/com/caiogs06/poo/avaliacao/quiz/
 │           └── QuizApplicationTests.java     # Testes da aplicação
@@ -123,9 +122,9 @@ quizisso/
 
 ### Páginas de Ação
 - `responder-questionario.html` - Interface para responder questionários (múltipla escolha + dissertativa)
-- `editar-questionario.html` - Edição de questionários com modal de exclusão
-- `visualizar-resultado.html` - Visualização de resultados com gabarito e modal de exclusão
-- `criar-questionario.html` - Criação de novos questionários
+- `formulario-questionario.html` - Criação e edição de questionários com modal de exclusão
+- `visualizar-resultado.html` - Visualização de resultado individual com gabarito e modal de exclusão
+- `visualizar-resultados.html` - Visualização de todos os resultados de um questionário com dados dos respondentes
 
 ### Componentes
 - `fragments/cabecalho.html` - Fragment Thymeleaf com:
@@ -145,11 +144,11 @@ Responsável por receber as requisições HTTP, processar e retornar as views ap
 - `LoginController.java` - Autenticação de usuários
 - `HomeController.java` - Página inicial com listagem de questionários
 - `MeusQuestionariosController.java` - Gerenciamento de questionários do usuário
-- `CriarQuestionarioController.java` - Criação de novos questionários
-- `EditarQuestionarioController.java` - Edição de questionários existentes
+- `FormularioQuestionarioController.java` - Criação e edição de questionários
 - `ResponderQuestionarioController.java` - Interface para responder questionários
 - `QuestionariosRespondidosController.java` - Histórico de questionários respondidos
-- `VisualizarResultadoController.java` - Visualização detalhada de resultados
+- `VisualizarResultadoController.java` - Visualização individual de resultado
+- `VisualizarResultadosController.java` - Visualização de todos os resultados de um questionário
 
 ### **Service** (Camada de Negócio)
 Contém a lógica de negócio da aplicação:
@@ -371,11 +370,12 @@ window.onclick = function (evento) {
 | `/login` | Página de autenticação | `login.html` | `LoginController` |
 | `/` | Landing page com todos os questionários | `home.html` | `HomeController` |
 | `/meus-questionarios` | Questionários criados pelo usuário | `meus-questionarios.html` | `MeusQuestionariosController` |
-| `/criar-questionario` | Criação de novos questionários | `criar-questionario.html` | `CriarQuestionarioController` |
-| `/editar-questionario/{id}` | Edição de questionário existente | `editar-questionario.html` | `EditarQuestionarioController` |
+| `/criar-questionario` | Criação de novos questionários | `formulario-questionario.html` | `FormularioQuestionarioController` |
+| `/editar-questionario/{id}` | Edição de questionário existente | `formulario-questionario.html` | `FormularioQuestionarioController` |
 | `/responder-questionario/{id}` | Interface para responder questionário | `responder-questionario.html` | `ResponderQuestionarioController` |
 | `/questionarios-respondidos` | Histórico de questionários respondidos | `questionarios-respondidos.html` | `QuestionariosRespondidosController` |
-| `/visualizar-resultado/{id}` | Visualização detalhada de resultado | `visualizar-resultado.html` | `VisualizarResultadoController` |
+| `/visualizar-resultado/{id}` | Visualização individual de resultado | `visualizar-resultado.html` | `VisualizarResultadoController` |
+| `/visualizar-resultados/{id}` | Visualização de todos os resultados | `visualizar-resultados.html` | `VisualizarResultadosController` |
 | `/alterar-foto` | Atualização de foto do usuário | - | `BaseController` |
 | `/alterar-nome` | Atualização de nome do usuário | - | `BaseController` |
 | `/logout` | Logout do sistema | - | `LoginController` |
